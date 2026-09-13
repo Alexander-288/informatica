@@ -11,42 +11,152 @@
   .head { display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-end; justify-content: space-between; }
   .count { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
 
-  .filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 2.5rem 0 1.25rem; }
+  .filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 2.5rem 0 3rem; }
   .filters button {
-    font: inherit; font-family: var(--mono); font-size: 0.75rem;
-    padding: 0.35rem 0.8rem; border-radius: 999px; cursor: pointer;
+    font: inherit; font-family: var(--mono); font-size: 0.72rem;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.4rem 0.85rem; border-radius: 0; cursor: pointer;
     background: transparent; color: var(--muted);
-    border: 1px solid var(--border); transition: 120ms ease;
+    border: 2px solid var(--border);
+    transition: color 120ms ease, border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
   }
-  .filters button:hover { color: var(--text); }
-  .filters button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+  .filters button:hover { color: var(--text); border-color: var(--text); }
+  .filters button[aria-pressed="true"] {
+    color: var(--text); border-color: var(--text);
+    box-shadow: 4px 4px 0 0 var(--accent);
+  }
+  .filters button:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 0 var(--accent); }
+  .filters button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
-  .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  /* the artwork hangs past the card on purpose; clip it at the page edge so it
+     can never turn into a horizontal scrollbar */
+  body { overflow-x: clip; }
+
+  /* a wider right gutter on this page, so the artwork has somewhere to hang */
+  .wrap { padding-right: clamp(1rem, 7vw, 4.5rem); }
+
+  /* ---------- the timeline ---------- */
+  .timeline { position: relative; }
+
+  /* the wandering spine, drawn in JS once the rows have been measured */
+  .spine {
+    position: absolute;
+    top: 0; left: 0;
+    overflow: visible;
+    pointer-events: none;
+    color: var(--text);
+  }
+  .spine .track { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: square; }
+  .spine .track.pending { stroke-dasharray: 7 7; opacity: 0.55; }
+  .spine .node { fill: var(--bg); stroke: currentColor; stroke-width: 4; }
+  .spine .node.done { fill: var(--accent); }
+  .spine .node.idea { opacity: 0.5; }
+  .spine .cap { fill: currentColor; }
+
+  .row {
+    --rail: clamp(52px, 8vw, 96px);
+    /* the artwork's size and how far it hangs past the card. The card's right
+       padding is derived from both, so text never ends up underneath it, and
+       the overhang stays inside the page gutter so the page never scrolls
+       sideways. */
+    --art: clamp(170px, 23vw, 280px);
+    --art-out: clamp(0.75rem, 3.5vw, 3rem);
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+    padding: clamp(1.5rem, 3vw, 2.25rem) 0;
+  }
+
+  /* the easter egg: a pattern band behind each row, bleeding past the page gutter */
+  .band {
+    position: absolute;
+    inset: 0 calc(-1 * clamp(1rem, 4vw, 2rem));
+    z-index: 0;
+    overflow: hidden;
+    color: var(--text);
+    opacity: 0.075;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(90deg, #000 55%, transparent 100%);
+    mask-image: linear-gradient(90deg, #000 55%, transparent 100%);
+  }
+  :root[data-theme="dark"] .band { opacity: 0.1; }
+  .band svg { width: 100%; height: 100%; display: block; }
 
   .card {
-    position: relative; display: flex; flex-direction: column; gap: 0.7rem;
-    padding: 1.25rem; text-decoration: none; color: inherit;
-    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-    transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: clamp(1.4rem, 3vw, 2rem);
+    padding-right: calc(var(--art) - var(--art-out) + 1.25rem);
+    min-height: 190px;
+    text-decoration: none;
+    color: inherit;
+    background: var(--surface);
+    border: 2px solid var(--text);
+    border-radius: 0;
+    box-shadow: 8px 8px 0 0 var(--card-accent, var(--accent));
+    transition: transform 140ms ease, box-shadow 140ms ease;
   }
-  .card::before {
-    content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
-    border-radius: var(--radius) 0 0 var(--radius);
-    background: var(--card-accent, var(--accent)); opacity: 0.75;
+  .card:hover { transform: translate(-2px, -2px); box-shadow: 12px 12px 0 0 var(--card-accent, var(--accent)); }
+  .card:active { transform: translate(2px, 2px); box-shadow: 5px 5px 0 0 var(--card-accent, var(--accent)); }
+  .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+
+  .card h2 { margin: 0; font-size: clamp(1.3rem, 2.6vw, 1.8rem); letter-spacing: -0.02em; line-height: 1.1; }
+  .card p { margin: 0; max-width: 46ch; font-size: 0.96rem; line-height: 1.6; color: var(--muted); }
+
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 0.45rem 0.8rem;
+    margin-top: auto; padding-top: 0.5rem; align-items: center;
   }
-  .card:hover { transform: translateY(-2px); border-color: var(--card-accent, var(--accent)); box-shadow: 0 10px 30px -18px rgba(0,0,0,0.6); }
+  .slug { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+  .when { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
 
-  .card h2 { margin: 0; font-size: 1.15rem; letter-spacing: -0.01em; }
-  .card p { margin: 0; font-size: 0.9rem; line-height: 1.55; color: var(--muted); }
-  .card .meta { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: auto; padding-top: 0.5rem; align-items: center; }
-  .slug { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
-
-  .status { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .status {
+    font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 0.15rem 0.45rem; border: 1px solid currentColor;
+  }
   .status.done { color: var(--ok); }
   .status.wip { color: var(--warn); }
   .status.idea { color: var(--muted); }
 
+  .open {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--text);
+  }
+  .open .arrow { transition: transform 140ms ease; }
+  .card:hover .open .arrow { transform: translateX(4px); }
+
+  /* the artwork, deliberately larger than the card that holds it */
+  .art {
+    position: absolute;
+    z-index: 2;
+    right: calc(-1 * var(--art-out));
+    top: 50%;
+    width: var(--art);
+    transform: translateY(-50%) rotate(-3deg);
+    color: var(--text);
+    pointer-events: none;
+    transition: transform 220ms ease;
+  }
+  .card:hover + .art, .row:hover .art { transform: translateY(-50%) rotate(0deg) scale(1.04); }
+  .art svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .art .accent { fill: var(--card-accent, var(--accent)); }
+
   .empty { padding: 3rem 1rem; text-align: center; color: var(--muted); font-family: var(--mono); font-size: 0.85rem; }
+
+  @media (max-width: 720px) {
+    .row { --rail: 34px; --art: clamp(104px, 30vw, 160px); --art-out: 0.5rem; padding: 1.25rem 0; }
+    .card { min-height: 0; box-shadow: 6px 6px 0 0 var(--card-accent, var(--accent)); }
+    .art { opacity: 0.9; }
+    .card p { max-width: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card, .art, .open .arrow, .filters button { transition: none; }
+  }
 </style>
 </head>
 <body>
@@ -54,6 +164,7 @@
   <span class="track"><span class="knob"></span></span>
   <span class="label">light</span>
 </button>
+
 <main class="wrap">
   <header class="head">
     <div>
@@ -65,7 +176,7 @@
   </header>
 
   <div class="filters" id="filters"></div>
-  <div class="grid" id="grid"></div>
+  <div class="timeline" id="timeline"></div>
   <p class="empty" id="empty" hidden>No projects match that filter.</p>
 
   <footer class="site">
@@ -76,7 +187,7 @@
 </main>
 
 <script type="module">
-const grid = document.getElementById('grid');
+const timeline = document.getElementById('timeline');
 const filters = document.getElementById('filters');
 const empty = document.getElementById('empty');
 
@@ -85,21 +196,186 @@ let active = 'all';
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+// ---------- band patterns: the per-row easter egg ----------
+// Each is a <pattern> body, tiled behind one row and inheriting currentColor.
+const PATTERNS = {
+  converge: { size: 60, body: '<rect x="4" y="4" width="52" height="52" fill="none" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"/><rect x="24" y="24" width="12" height="12" fill="currentColor"/>' },
+  grid: { size: 32, body: '<path d="M0 0H32M0 0V32" stroke="currentColor" stroke-width="2" fill="none"/>' },
+  dither: { size: 16, body: '<rect width="8" height="8" fill="currentColor"/><rect x="8" y="8" width="8" height="8" fill="currentColor"/>' },
+  rings: { size: 64, body: '<circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="32" cy="32" r="14" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="32" cy="32" r="4" fill="currentColor"/>' },
+  bars: { size: 24, body: '<path d="M-6 6L6 -6M0 24L24 0M18 30L30 18" stroke="currentColor" stroke-width="4" fill="none"/>' },
+  steps: { size: 40, body: '<path d="M0 40V20H20V0H40" stroke="currentColor" stroke-width="3" fill="none"/>' },
+  braces: { size: 48, body: '<text x="6" y="34" font-family="monospace" font-size="28" fill="currentColor">{ }</text>' },
+  dots: { size: 24, body: '<circle cx="6" cy="6" r="3" fill="currentColor"/><circle cx="18" cy="18" r="3" fill="currentColor"/>' },
+};
+const PATTERN_KEYS = Object.keys(PATTERNS);
+
+// a stable number from a string, so a project with no pattern set still gets
+// the same one every time rather than a different one on each load
+const hash = (s) => [...String(s)].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+
+function patternFor(project) {
+  if (project.pattern && PATTERNS[project.pattern]) return project.pattern;
+  const byTag = { algorithms: 'steps', canvas: 'dither', javascript: 'braces', math: 'rings', css: 'grid' };
+  for (const tag of project.tags ?? []) if (byTag[tag]) return byTag[tag];
+  return PATTERN_KEYS[hash(project.slug) % PATTERN_KEYS.length];
+}
+
+function bandSvg(project) {
+  const key = patternFor(project);
+  const { size, body } = PATTERNS[key];
+  const id = `pat-${project.slug}`;
+  return `<svg aria-hidden="true"><defs><pattern id="${esc(id)}" width="${size}" height="${size}" patternUnits="userSpaceOnUse">${body}</pattern></defs>` +
+    `<rect width="100%" height="100%" fill="url(#${esc(id)})"/></svg>`;
+}
+
+// ---------- fallback artwork, for a project that ships no card.svg ----------
+// A deterministic block composition, so every project has something of its own.
+function fallbackArt(project) {
+  const h = hash(project.slug);
+  const cells = [];
+  const shades = [0.3, 0.6, 0.95];
+  for (let i = 0; i < 22; i++) {
+    const n = hash(project.slug + i);
+    const x = (n % 6) * 40 + 10;
+    const y = (Math.floor(n / 6) % 6) * 40 + 10;
+    const big = n % 5 === 0;
+    const accent = n % 6 === 0;
+    cells.push(`<rect x="${x}" y="${y}" width="${big ? 70 : 30}" height="30"` +
+      (accent ? ' class="accent" fill="currentColor"' : ' fill="currentColor"') +
+      ` opacity="${accent ? 1 : shades[n % 3]}"/>`);
+  }
+  return `<svg viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">` +
+    `<rect x="${10 + (h % 3) * 20}" y="10" width="180" height="180" fill="none" stroke="currentColor" stroke-width="3" opacity="0.5"/>` +
+    cells.join('') + '</svg>';
+}
+
+// ---------- rows ----------
 function render() {
   const shown = active === 'all' ? projects : projects.filter((p) => (p.tags ?? []).includes(active));
   empty.hidden = shown.length > 0;
-  grid.innerHTML = shown.map((p) => `
-    <a class="card" href="${esc(p.demo ?? p.source ?? '#')}" style="--card-accent:${esc(p.accent ?? 'var(--accent)')}">
-      <h2>${esc(p.title)}</h2>
-      <p>${esc(p.description)}</p>
-      <div class="meta">
-        <span class="status ${esc(p.status)}">${esc(p.status)}</span>
-        <span class="slug">${esc(p.slug)}/</span>
-        ${(p.tags ?? []).map((t) => `<span class="tag">${esc(t)}</span>`).join('')}
-      </div>
-    </a>`).join('');
+
+  timeline.innerHTML = `<svg class="spine" id="spine" aria-hidden="true"></svg>` + shown.map((p) => {
+    const href = p.demo ?? p.source ?? '#';
+    return `
+    <div class="row" data-slug="${esc(p.slug)}" style="--card-accent:${esc(p.accent ?? 'var(--accent)')}">
+      <div class="band">${bandSvg(p)}</div>
+      <div class="rail"></div>
+      <a class="card" href="${esc(href)}">
+        <h2>${esc(p.title)}</h2>
+        <p>${esc(p.description)}</p>
+        <div class="meta">
+          <span class="status ${esc(p.status)}">${esc(p.status)}</span>
+          <span class="slug">${esc(p.slug)}/</span>
+          <span class="when">${esc(p.updated ?? '')}</span>
+          ${(p.tags ?? []).map((t) => `<span class="tag">${esc(t)}</span>`).join('')}
+        </div>
+        <span class="open">open <span class="arrow" aria-hidden="true">&#9656;</span></span>
+      </a>
+      <div class="art" data-graphic="${esc(p.graphic ?? '')}">${p.graphic ? '' : fallbackArt(p)}</div>
+    </div>`;
+  }).join('');
+
+  loadGraphics();
+  drawSpine();
 }
 
+// Custom artwork is fetched and inlined rather than used as <img>, so it can
+// inherit the page colours and follow the theme.
+async function loadGraphics() {
+  for (const holder of timeline.querySelectorAll('.art[data-graphic]')) {
+    const src = holder.dataset.graphic;
+    if (!src || holder.dataset.loaded) continue;
+    try {
+      const svg = await fetch(src, { cache: 'no-cache' }).then((r) => (r.ok ? r.text() : Promise.reject()));
+      // only inline it if it really is an svg document
+      if (svg.trim().startsWith('<svg')) {
+        holder.innerHTML = svg;
+        holder.dataset.loaded = '1';
+      }
+    } catch {
+      holder.innerHTML = fallbackArt({ slug: holder.closest('.row').dataset.slug, tags: [] });
+      holder.dataset.loaded = '1';
+    }
+  }
+}
+
+// ---------- the spine ----------
+// A commit graph that refuses to run straight: each node sits at its own offset
+// across the rail and the segments between them step, slant or drop.
+function drawSpine() {
+  const spine = document.getElementById('spine');
+  const rows = [...timeline.querySelectorAll('.row')];
+  if (!spine || !rows.length) return;
+
+  const box = timeline.getBoundingClientRect();
+  const rail = rows[0].querySelector('.rail').getBoundingClientRect().width;
+  const pad = Math.min(14, rail * 0.22);
+  const usable = Math.max(1, rail - pad * 2);
+
+  // where each node sits across the rail, as a fraction, cycling so a long list
+  // keeps wandering instead of settling into a straight line
+  const lanes = [0.5, 0.22, 0.78, 0.36, 0.64, 0.14];
+
+  const nodes = rows.map((row, i) => {
+    const card = row.querySelector('.card').getBoundingClientRect();
+    return {
+      x: Math.round(pad + lanes[i % lanes.length] * usable),
+      y: Math.round(card.top - box.top + Math.min(48, card.height / 2)),
+      status: row.querySelector('.status')?.textContent.trim() ?? 'wip',
+    };
+  });
+
+  spine.setAttribute('viewBox', `0 0 ${Math.round(rail)} ${Math.round(box.height)}`);
+  spine.setAttribute('preserveAspectRatio', 'none');
+  spine.style.width = `${Math.round(rail)}px`;
+  spine.style.height = `${Math.round(box.height)}px`;
+
+  const parts = [];
+
+  // a stub above the first node and below the last, so the line runs off the page
+  parts.push(`<path class="track" d="M${nodes[0].x} 0V${nodes[0].y}"/>`);
+  const last = nodes[nodes.length - 1];
+  parts.push(`<path class="track pending" d="M${last.x} ${last.y}V${Math.round(box.height)}"/>`);
+
+  for (let i = 0; i < nodes.length - 1; i++) {
+    const a = nodes[i];
+    const b = nodes[i + 1];
+    const dx = b.x - a.x;
+    const gap = b.y - a.y;
+    const style = hash(`${a.x}:${b.y}`) % 3;
+    let d;
+
+    if (dx === 0) {
+      d = `M${a.x} ${a.y}V${b.y}`;
+    } else if (style === 0) {
+      // right angles: down, across, down
+      const mid = a.y + Math.round(gap * 0.55);
+      d = `M${a.x} ${a.y}V${mid}H${b.x}V${b.y}`;
+    } else if (style === 1) {
+      // a 45 degree slant, squared off at both ends
+      const run = Math.abs(dx);
+      const start = a.y + Math.max(0, Math.round(gap * 0.3) - run / 2);
+      d = `M${a.x} ${a.y}V${start}L${b.x} ${start + run}V${b.y}`;
+    } else {
+      // a small detour past the target lane and back
+      const over = b.x + Math.sign(dx) * Math.min(12, usable * 0.12);
+      const first = a.y + Math.round(gap * 0.35);
+      const second = a.y + Math.round(gap * 0.7);
+      d = `M${a.x} ${a.y}V${first}H${over}V${second}H${b.x}V${b.y}`;
+    }
+    parts.push(`<path class="track" d="${d}"/>`);
+  }
+
+  // nodes last, so they sit on top of the line
+  for (const n of nodes) {
+    parts.push(`<rect class="node ${n.status}" x="${n.x - 8}" y="${n.y - 8}" width="16" height="16"/>`);
+  }
+
+  spine.innerHTML = parts.join('');
+}
+
+// ---------- filters ----------
 function renderFilters() {
   const tags = [...new Set(projects.flatMap((p) => p.tags ?? []))].sort();
   filters.innerHTML = ['all', ...tags]
@@ -115,6 +391,12 @@ filters.addEventListener('click', (e) => {
   render();
 });
 
+const redraw = () => requestAnimationFrame(drawSpine);
+window.addEventListener('resize', redraw);
+document.addEventListener('themechange', redraw);
+document.fonts?.ready.then(redraw);
+
+// ---------- load ----------
 try {
   const data = await fetch('projects.json', { cache: 'no-cache' }).then((r) => r.json());
   projects = data.projects ?? [];
@@ -125,7 +407,7 @@ try {
   renderFilters();
   render();
 } catch (err) {
-  grid.innerHTML = '';
+  timeline.innerHTML = '';
   empty.hidden = false;
   empty.textContent = 'Could not load projects.json. Open this page over http, not file://';
 }

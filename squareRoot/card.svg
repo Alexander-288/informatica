@@ -1,0 +1,44 @@
+<svg viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true">
+  <!--
+    Heron's method, drawn honestly: every rectangle here has the same area.
+    Each step replaces x with the average of x and n/x, so the rectangle of
+    area n gets less and less oblong until it settles on the square of side
+    sqrt(n). Sides below are the real iterates for n = 10000, x0 = 250.
+  -->
+  <defs>
+    <pattern id="sr-dither" width="8" height="8" patternUnits="userSpaceOnUse">
+      <rect width="4" height="4" fill="currentColor"/>
+      <rect x="4" y="4" width="4" height="4" fill="currentColor"/>
+    </pattern>
+  </defs>
+
+  <g stroke="currentColor" stroke-width="3">
+    <!-- 250 x 40 -->
+    <rect x="5" y="110" width="250" height="40" opacity="0.28"/>
+    <!-- 145 x 69 -->
+    <rect x="57.5" y="95.5" width="145" height="69" opacity="0.45"/>
+    <!-- 107 x 93.5 -->
+    <rect x="76.5" y="83" width="107" height="93.5" opacity="0.7"/>
+  </g>
+
+  <!-- the limit: a 100 x 100 square, filled with the site's dither -->
+  <rect x="80" y="80" width="100" height="100" fill="url(#sr-dither)" opacity="0.55"/>
+  <rect x="80" y="80" width="100" height="100" stroke="currentColor" stroke-width="4"/>
+
+  <!-- radical sign, built from blocks rather than drawn as a stroke -->
+  <g class="accent" fill="currentColor">
+    <rect x="8" y="44" width="12" height="12"/>
+    <rect x="20" y="56" width="12" height="12"/>
+    <rect x="32" y="68" width="12" height="12"/>
+    <rect x="32" y="56" width="12" height="12"/>
+    <rect x="44" y="44" width="12" height="12"/>
+    <rect x="44" y="32" width="12" height="12"/>
+    <rect x="56" y="20" width="12" height="12"/>
+    <rect x="68" y="20" width="12" height="12"/>
+    <rect x="80" y="20" width="12" height="12"/>
+    <rect x="92" y="20" width="12" height="12"/>
+  </g>
+
+  <!-- the point everything converges on -->
+  <rect class="accent" x="124" y="124" width="12" height="12" fill="currentColor"/>
+</svg>

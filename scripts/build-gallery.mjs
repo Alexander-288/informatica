@@ -31,6 +31,9 @@ for (const entry of entries) {
   }
 
   const hasDemo = existsSync(path.join(root, entry.name, 'index.html'));
+  // a project can ship its own card artwork as card.svg, or name one in project.json
+  const graphic = meta.graphic
+    ?? (existsSync(path.join(root, entry.name, 'card.svg')) ? 'card.svg' : null);
   const updated = meta.updated ?? (await stat(metaPath)).mtime.toISOString().slice(0, 10);
 
   projects.push({
@@ -40,6 +43,8 @@ for (const entry of entries) {
     tags: meta.tags ?? [],
     status: meta.status ?? 'wip',
     accent: meta.accent ?? null,
+    graphic: graphic ? `${entry.name}/${graphic}` : null,
+    pattern: meta.pattern ?? null,
     demo: meta.demo ?? (hasDemo ? `${entry.name}/` : null),
     source: meta.source ?? `${entry.name}/`,
     updated,

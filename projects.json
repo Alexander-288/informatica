@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-13T06:51:37.380Z",
+  "generated": "2026-09-13T07:46:49.770Z",
   "count": 1,
   "projects": [
     {
@@ -12,7 +12,9 @@
         "canvas"
       ],
       "status": "done",
-      "accent": "#7cc4ff",
+      "accent": "#9C90FC",
+      "graphic": "squareRoot/card.svg",
+      "pattern": "converge",
       "demo": "squareRoot/",
       "source": "squareRoot/",
       "updated": "2026-09-13"

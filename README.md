@@ -19,6 +19,7 @@ One repository for every informatics project, with a GitHub Pages gallery in fro
 ├── scripts/build-tree.mjs      scanner that regenerates tree.json
 └── squareRoot/             project 01
     ├── index.html          the live demo
+    ├── card.svg            its artwork on the gallery timeline
     └── project.json        its metadata
 ```
 
@@ -34,12 +35,19 @@ One repository for every informatics project, with a GitHub Pages gallery in fro
   "description": "One sentence about what it does.",
   "tags": ["javascript", "algorithms"],
   "status": "wip",
-  "accent": "#e2b45f"
+  "pattern": "steps"
 }
 ```
 
-4. Push. The **Build gallery index** workflow runs `scripts/build-gallery.mjs`, regenerates
-   `projects.json`, and commits it back if anything changed. The gallery picks it up on the next load.
+4. Optionally drop a `card.svg` in the folder. It is inlined into the gallery card and
+   deliberately hangs over the card's edge, so draw it on a square viewBox and let it
+   breathe. Use `currentColor` for the ink and `class="accent"` on any shape that should
+   take the project's accent colour - that way it follows the light/dark theme. Without
+   one, the gallery generates a block composition from the folder name instead.
+
+5. Push. The **Build gallery and file index** workflow runs `scripts/build-gallery.mjs` and
+   `scripts/build-tree.mjs`, regenerates `projects.json` and `tree.json`, and commits them back
+   if anything changed. The gallery picks it up on the next load.
 
 To preview locally before pushing:
 
@@ -47,6 +55,8 @@ To preview locally before pushing:
 node scripts/build-gallery.mjs
 python -m http.server 8000
 ```
+or just use a VScode extension like live server
+> whatever tickles your fancy
 
 ### project.json fields
 
@@ -55,7 +65,9 @@ python -m http.server 8000
 | `title` | no | defaults to the folder name |
 | `description` | no | shown on the card |
 | `tags` | no | become the filter buttons on the gallery |
-| `status` | no | `done`, `wip`, or `idea` (default `wip`) |
+| `status` | no | `done`, `wip`, or `idea` (default `wip`); sets the node style on the timeline |
+| `pattern` | no | the background pattern behind the card's row: `converge`, `grid`, `dither`, `rings`, `bars`, `steps`, `braces`, `dots`. Picked from the tags, then from the folder name, if unset |
+| `graphic` | no | path to the card artwork inside the folder; `card.svg` is picked up automatically |
 | `accent` | no | hex colour for the card's left edge |
 | `demo` | no | defaults to the folder if it has an `index.html` |
 | `source` | no | defaults to the folder |
