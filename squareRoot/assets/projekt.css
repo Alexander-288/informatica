@@ -1,0 +1,668 @@
+/* Pierwiastek kwadratowy - wspolny arkusz dla obu stron projektu.
+ *
+ * Kolory pochodza wylacznie ze zmiennych z ../../assets/site.css, dzieki
+ * czemu obie strony chodza z przelacznikiem motywu bez dodatkowej pracy.
+ * Nie wpisuj tu wartosci kolorow wprost.
+ *
+ * Jezyk wizualny: papier w kratke (z site.css) plus dwa akcenty przejete
+ * z przelacznika motywu - kwadratowe rogi i twardy cien z przesunieciem.
+ * Tresc narracyjna idzie szeryfowa, dane i kod - szerokoscia stala.
+ */
+
+:root {
+  --szeryf: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
+            ui-serif, serif;
+  --cien: 4px 4px 0 0 var(--accent);
+  --cien-cichy: 3px 3px 0 0 var(--border);
+}
+
+/* ============================================================
+   wspolne
+   ============================================================ */
+
+.tresc { max-width: 68ch; }
+
+/* Wzor stoi na papierze, nie w pudelku: dwie wlosowe linie i duzo powietrza,
+   jak w podreczniku. Zadnego wypelnienia, zadnej ramki. */
+.wzor {
+  font-family: var(--mono);
+  font-size: clamp(1rem, 2.6vw, 1.25rem);
+  line-height: 1.9;
+  color: var(--text);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 1.2rem 0;
+  margin: 1.8rem 0;
+  text-align: center;
+  overflow-x: auto;
+}
+.wzor em {
+  display: block;
+  font-family: var(--sans);
+  font-style: normal;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
+}
+
+.podpis {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  line-height: 1.7;
+  color: var(--muted);
+  margin: 0.8rem 0 0;
+}
+
+/* Ujawnianie sekcji przy przewijaniu.
+ *
+ * Stan poczatkowy obowiazuje tylko pod klasa .ruch, ktora ustawia scrolly.js.
+ * Gdyby JavaScript nie wstal, cala tresc jest normalnie widoczna zamiast
+ * zostac przezroczysta na zawsze. */
+.ruch .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 520ms ease, transform 520ms ease;
+}
+.ruch .reveal.widoczny { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* ============================================================
+   strona z opowiescia
+   ============================================================ */
+
+.opowiesc { font-family: var(--szeryf); }
+
+.opowiesc .scena {
+  position: relative;
+  padding: clamp(3.5rem, 11vh, 7rem) 0;
+  border-top: 1px solid var(--border);
+}
+.opowiesc .scena:first-of-type { border-top: 0; padding-top: clamp(1rem, 4vh, 2rem); }
+
+.opowiesc h1 {
+  font-family: var(--szeryf);
+  font-weight: 600;
+  font-size: clamp(2.3rem, 7vw, 4.2rem);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+}
+.opowiesc h2 {
+  font-family: var(--szeryf);
+  font-weight: 600;
+  font-size: clamp(1.5rem, 3.6vw, 2.1rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0 0 1.2rem;
+}
+.opowiesc h3 {
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 2rem 0 0.6rem;
+}
+.opowiesc p {
+  font-size: clamp(1.02rem, 2.2vw, 1.14rem);
+  line-height: 1.72;
+  color: var(--text-2);
+  margin: 0 0 1.1rem;
+  max-width: 62ch;
+}
+.opowiesc p strong { color: var(--text); font-weight: 600; }
+
+/* --- sygnatura strony: drabina cyfr --- */
+/* Kolejne przyblizenia sqrt(2). Cyfry juz ustalone sa atramentem,
+   reszta - szumem. Liczba ustalonych cyfr podwaja sie w kazdym wierszu
+   i to jest cala metoda babilonska pokazana jednym obrazkiem. */
+
+.drabina {
+  margin: clamp(1.8rem, 5vw, 3rem) 0 0;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.75;
+}
+.drabina-wiersz {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(0.6rem, 2vw, 1.1rem);
+  font-size: clamp(0.78rem, 2.6vw, 1.35rem);
+  white-space: nowrap;
+}
+.ruch .drabina-wiersz {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 420ms ease, transform 420ms ease;
+}
+.ruch .drabina.widoczny .drabina-wiersz { opacity: 1; transform: none; }
+.ruch .drabina.widoczny .drabina-wiersz:nth-child(1) { transition-delay: 0ms; }
+.ruch .drabina.widoczny .drabina-wiersz:nth-child(2) { transition-delay: 260ms; }
+.ruch .drabina.widoczny .drabina-wiersz:nth-child(3) { transition-delay: 520ms; }
+.ruch .drabina.widoczny .drabina-wiersz:nth-child(4) { transition-delay: 780ms; }
+.ruch .drabina.widoczny .drabina-wiersz:nth-child(5) { transition-delay: 1040ms; }
+.ruch .drabina.widoczny .drabina-wiersz:nth-child(6) { transition-delay: 1300ms; }
+
+.drabina-krok {
+  flex: none;
+  width: 2.4em;
+  font-size: 0.62em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pewne { color: var(--text); }
+.pewne mark {
+  background: none;
+  color: var(--text);
+  box-shadow: inset 0 -2px 0 0 var(--accent);
+}
+.niepewne { color: var(--border); }
+
+.drabina-opis {
+  margin: 1.4rem 0 0;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  max-width: 46ch;
+  line-height: 1.7;
+}
+
+/* --- os czasu --- */
+.os { margin: 2.5rem 0 0; }
+.os-wpis {
+  display: grid;
+  gap: 0.4rem 1.6rem;
+  grid-template-columns: minmax(0, 1fr);
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--border);
+}
+@media (min-width: 720px) {
+  .os-wpis { grid-template-columns: 9rem minmax(0, 1fr); }
+}
+.os-kiedy {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  padding-top: 0.35rem;
+}
+.os-wpis h3 { margin: 0 0 0.5rem; font-family: var(--szeryf); font-size: 1.2rem; }
+.os-wpis p { margin: 0 0 0.6rem; font-size: 1rem; }
+.os-wpis p:last-child { margin-bottom: 0; }
+
+/* --- tabliczka YBC 7289 --- */
+.tabliczka {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  margin: 0 0 1rem;
+}
+.tabliczka .accent { color: var(--accent); }
+
+.dwie-kolumny {
+  display: grid;
+  gap: clamp(1.2rem, 4vw, 2.5rem);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+@media (min-width: 800px) {
+  .dwie-kolumny { grid-template-columns: minmax(0, 1fr) 320px; }
+}
+
+/* --- zwrotnica --- */
+.zwrotnica {
+  text-align: center;
+  padding: clamp(3.5rem, 12vh, 7rem) 0;
+}
+.zwrotnica p { margin-left: auto; margin-right: auto; }
+
+.wejscie {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 1.4rem;
+  padding: 0.85rem 1.5rem;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--text);
+  background: var(--bg);
+  border: 2px solid var(--text);
+  box-shadow: var(--cien);
+  transition: transform 90ms steps(2), box-shadow 90ms steps(2);
+}
+.wejscie:hover { transform: translate(-1px, -1px); box-shadow: 6px 6px 0 0 var(--accent); }
+.wejscie:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 0 var(--accent); }
+.wejscie:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+/* --- zrodla --- */
+.zrodla { list-style: none; padding: 0; margin: 1.5rem 0 0; }
+.zrodla li {
+  padding: 0.9rem 0;
+  border-top: 1px solid var(--border);
+  font-family: var(--sans);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.zrodla a { color: var(--accent-ink); text-decoration: none; border-bottom: 1px solid var(--border); }
+.zrodla a:hover { border-bottom-color: var(--accent); }
+
+/* ============================================================
+   pracownia
+   ============================================================ */
+
+.pracownia-uklad {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  margin-top: 2rem;
+}
+@media (min-width: 1024px) {
+  .pracownia-uklad { grid-template-columns: 14rem minmax(0, 1fr); }
+}
+
+/* szyna sekcji */
+.szyna {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  padding: 0.7rem 0;
+  margin: 0 0 0.5rem;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+.szyna ol {
+  display: flex;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: sekcja;
+}
+.szyna a {
+  display: block;
+  white-space: nowrap;
+  padding: 0.35rem 0.6rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-decoration: none;
+  color: var(--muted);
+  border: 1px solid transparent;
+}
+.szyna a:hover { color: var(--text); }
+.szyna a[aria-current="true"] {
+  color: var(--accent-ink);
+  border-color: var(--border);
+  background: var(--accent-soft);
+}
+.szyna a::before {
+  content: counter(sekcja) ". ";
+  color: var(--muted);
+}
+.szyna li { counter-increment: sekcja; }
+
+@media (min-width: 1024px) {
+  .szyna {
+    top: clamp(1rem, 4vw, 3rem);
+    border-bottom: 0;
+    border-left: 1px solid var(--border);
+    padding: 0 0 0 0.9rem;
+    overflow: visible;
+  }
+  .szyna ol { flex-direction: column; gap: 0.1rem; }
+  .szyna a { padding: 0.3rem 0.5rem; font-size: 0.74rem; }
+}
+
+.sekcja {
+  padding: clamp(2rem, 6vh, 3.5rem) 0;
+  border-top: 1px solid var(--border);
+  scroll-margin-top: 5rem;
+}
+.sekcja:first-of-type { border-top: 0; padding-top: 0; }
+
+.sekcja > h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  margin: 0 0 1.2rem;
+  font-size: clamp(1.35rem, 3.2vw, 1.9rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.sekcja > h2 .numer {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: var(--accent-ink);
+  flex: none;
+}
+.sekcja h3 {
+  font-size: 1rem;
+  margin: 2rem 0 0.6rem;
+  letter-spacing: -0.01em;
+}
+.sekcja p, .sekcja li {
+  font-size: 0.97rem;
+  line-height: 1.7;
+  color: var(--text-2);
+  max-width: 68ch;
+}
+.sekcja p { margin: 0 0 1rem; }
+.sekcja ul, .sekcja ol.lista { padding-left: 1.2rem; margin: 0 0 1.2rem; }
+.sekcja li { margin-bottom: 0.4rem; }
+.sekcja strong { color: var(--text); }
+
+/* karty z liczbami */
+.karty {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  margin: 1.5rem 0;
+}
+.karta {
+  padding: 0.9rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.karta dt {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.karta dd {
+  margin: 0.35rem 0 0;
+  font-family: var(--mono);
+  font-size: 1.25rem;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.karta dd small { font-size: 0.7rem; color: var(--muted); }
+
+/* tabele wynikow */
+.przewijana { overflow-x: auto; margin: 1.4rem 0; }
+.tabela {
+  width: 100%;
+  min-width: 30rem;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+.tabela th, .tabela td {
+  text-align: right;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.tabela th {
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+}
+.tabela td:first-child, .tabela th:first-child { text-align: left; color: var(--muted); }
+.tabela tr.srednia td {
+  background: var(--accent-soft);
+  color: var(--text);
+  font-weight: 600;
+  border-bottom: 0;
+}
+.tabela tr.srednia td:first-child { color: var(--accent-ink); }
+.tabela caption {
+  caption-side: top;
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  padding-bottom: 0.6rem;
+}
+
+/* bloki kodu */
+.blok-kodu {
+  position: relative;
+  margin: 1.3rem 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.blok-kodu > figcaption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0.8rem;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.blok-kodu pre {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+  max-height: 30rem;
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  line-height: 1.65;
+  color: var(--text);
+  tab-size: 4;
+}
+.blok-kodu code { font: inherit; }
+
+.kopiuj {
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.2rem 0.55rem;
+  cursor: pointer;
+}
+.kopiuj:hover { color: var(--accent-ink); border-color: var(--accent); }
+.kopiuj:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* podswietlanie skladni */
+.tok-komentarz { color: var(--muted); font-style: italic; }
+.tok-napis { color: var(--ok); }
+.tok-slowo { color: var(--accent-ink); font-weight: 600; }
+.tok-liczba { color: var(--warn); }
+.tok-funkcja { color: var(--text); font-weight: 600; }
+
+/* wizualizator */
+.wizualizator {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 1.5rem 0;
+}
+@media (min-width: 860px) {
+  .wizualizator { grid-template-columns: 17rem minmax(0, 1fr); align-items: start; }
+}
+.sterowanie { display: flex; flex-direction: column; gap: 1rem; }
+
+.pole label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+.pole input[type="number"], .pole select {
+  width: 100%;
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  padding: 0.5rem 0.6rem;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.pole input:focus-visible, .pole select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.przyciski { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.przyciski button {
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  cursor: pointer;
+  padding: 0.45rem 0.8rem;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.przyciski button:hover { border-color: var(--accent); color: var(--accent-ink); }
+.przyciski button.glowny { background: var(--accent-soft); border-color: transparent; color: var(--accent-ink); }
+.przyciski button:disabled { opacity: 0.45; cursor: not-allowed; border-color: var(--border); color: var(--muted); }
+.przyciski button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.odczyt { margin: 0; padding-top: 0.9rem; border-top: 1px solid var(--border); }
+.odczyt dt {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.odczyt dd {
+  margin: 0.2rem 0 0.9rem;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  word-break: break-all;
+  font-variant-numeric: tabular-nums;
+}
+.odczyt dd.drobne { font-size: 0.76rem; color: var(--muted); }
+
+canvas.scena-rysunku {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* wykresy */
+.wykres {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.wykres h3 { margin: 0 0 0.2rem; font-size: 0.9rem; }
+.wykres svg { display: block; width: 100%; height: auto; color: var(--muted); }
+.wykres .slupek { fill: var(--accent); }
+.wykres .slupek-cichy { fill: var(--border); }
+.wykres .os-linia { stroke: var(--border); stroke-width: 1; }
+.wykres .etykieta {
+  font-family: var(--mono);
+  font-size: 9px;
+  fill: var(--muted);
+}
+.wykres .wartosc {
+  font-family: var(--mono);
+  font-size: 9px;
+  fill: var(--text);
+  font-weight: 600;
+}
+.wykres .linia-danych { fill: none; stroke: var(--accent); stroke-width: 2; }
+.wykres .linia-cicha { fill: none; stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.wykres .punkt { fill: var(--accent); }
+
+/* replika arkusza */
+.arkusz {
+  width: 100%;
+  min-width: 34rem;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+}
+.arkusz th, .arkusz td {
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.5rem;
+  text-align: right;
+  white-space: nowrap;
+}
+.arkusz thead th {
+  background: var(--surface-2);
+  color: var(--muted);
+  font-weight: 500;
+  text-align: center;
+}
+.arkusz td.naglowek-wiersza {
+  background: var(--surface-2);
+  color: var(--muted);
+  text-align: center;
+}
+.arkusz td.wejscie-arkusza { background: var(--accent-soft); color: var(--accent-ink); font-weight: 600; }
+.arkusz td.formula { text-align: left; color: var(--text-2); }
+
+/* Uwaga metodyczna - dopisek na marginesie, nie pudelko. Wciety blok
+   pisma maszynowego z wiszacym znakiem paragrafu w akcencie. */
+.uwaga {
+  position: relative;
+  margin: 1.6rem 0;
+  padding-left: 1.9rem;
+}
+.uwaga::before {
+  content: "¶";
+  position: absolute;
+  left: 0;
+  top: 0.05em;
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  color: var(--accent);
+}
+.uwaga p {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.75;
+  color: var(--muted);
+  max-width: 60ch;
+}
+.uwaga p + p { margin-top: 0.6rem; }
+.uwaga strong { color: var(--text); }
+
+/* pobranie pliku */
+.pobierz {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  text-decoration: none;
+  color: var(--accent-ink);
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.pobierz:hover { border-color: var(--accent); }

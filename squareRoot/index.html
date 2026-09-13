@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pierwiastek kwadratowy — skąd komputer bierze wynik</title>
+<meta name="description" content="Metoda babilońska (metoda Herona) obliczania pierwiastka kwadratowego: historia, teoria, implementacje i zmierzone porównanie z funkcją biblioteczną sqrt().">
+<link rel="icon" href="../assets/favicon.ico" sizes="16x16 32x32 48x48 64x64">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="assets/projekt.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body class="opowiesc">
+<button class="theme-toggle" type="button" aria-pressed="false" aria-label="Przełącz motyw">
+  <span class="track"><span class="knob"></span></span>
+  <span class="label">jasny</span>
+</button>
+
+<main class="wrap">
+  <a class="back" href="../gallery.html">← galeria</a>
+
+  <!-- ===== 1. wprowadzenie ===== -->
+  <section class="scena">
+    <p class="eyebrow">Projekt 01 · algorytmy</p>
+    <h1>Skąd komputer<br>bierze pierwiastek</h1>
+
+    <div class="drabina reveal" aria-hidden="true">
+      <div class="drabina-wiersz">
+        <span class="drabina-krok">x₀</span>
+        <span><span class="pewne"><mark>1</mark></span><span class="niepewne">,000000000000000</span></span>
+      </div>
+      <div class="drabina-wiersz">
+        <span class="drabina-krok">x₁</span>
+        <span><span class="pewne"><mark>1,5</mark></span><span class="niepewne">00000000000000</span></span>
+      </div>
+      <div class="drabina-wiersz">
+        <span class="drabina-krok">x₂</span>
+        <span><span class="pewne"><mark>1,41</mark></span><span class="niepewne">6666666666667</span></span>
+      </div>
+      <div class="drabina-wiersz">
+        <span class="drabina-krok">x₃</span>
+        <span><span class="pewne"><mark>1,41421</mark></span><span class="niepewne">5686274510</span></span>
+      </div>
+      <div class="drabina-wiersz">
+        <span class="drabina-krok">x₄</span>
+        <span><span class="pewne"><mark>1,41421356237</mark></span><span class="niepewne">4690</span></span>
+      </div>
+      <div class="drabina-wiersz">
+        <span class="drabina-krok">x₅</span>
+        <span><span class="pewne"><mark>1,414213562373095</mark></span></span>
+      </div>
+    </div>
+
+    <p class="drabina-opis">
+      √2 liczone metodą sprzed czterech tysięcy lat. Podświetlone są cyfry już
+      ustalone. W każdym kroku jest ich mniej więcej dwa razy więcej niż
+      w poprzednim. Pięć kroków wystarcza, żeby wyczerpać precyzję komputera.
+    </p>
+  </section>
+
+  <!-- ===== 2. o co chodzi ===== -->
+  <section class="scena reveal">
+    <h2>Cztery działania i jeden kłopot</h2>
+    <div class="tresc">
+      <p>
+        Dodawanie, odejmowanie, mnożenie i dzielenie procesor wykonuje wprost:
+        bierze dwie liczby i zwraca trzecią. Pierwiastek kwadratowy tak nie działa.
+        <strong>√2 nie da się zapisać ułamkiem</strong> ani skończonym rozwinięciem
+        dziesiętnym — odkryli to Grecy i przez chwilę uznali za skandal.
+        Nie ma zatem wzoru, który z liczby <em>n</em> wyprowadzi jej pierwiastek
+        w jednym kroku rachunku.
+      </p>
+      <p>
+        Zamiast tego trzeba zgadywać, ale zgadywać metodycznie. Wybrać jakąś
+        liczbę, sprawdzić, o ile się myliliśmy, poprawić się i powtórzyć.
+        Dobra metoda numeryczna to taka, w której każde powtórzenie zbliża nas
+        do celu szybciej niż poprzednie.
+      </p>
+      <p>
+        Ten projekt opisuje najstarszą taką metodę, sprawdza, jak dokładne są
+        jej wyniki, i mierzy, ile kosztuje jej użycie zamiast gotowej funkcji
+        <code>sqrt()</code> wbudowanej w każdy język programowania.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== 3. historia ===== -->
+  <section class="scena reveal">
+    <h2>Cztery tysiące lat</h2>
+
+    <div class="dwie-kolumny">
+      <div>
+        <p>
+          Metoda, którą tu opisuję, jest starsza od greckiej geometrii, od cyfry
+          zero i od zapisu dziesiętnego. Znali ją skrybowie w Mezopotamii, a my
+          wciąż jej używamy. Dziś już nie na glinie, tylko w procesorze, który
+          startuje od niej przybliżenie sprzętowe.
+        </p>
+      </div>
+      <figure>
+        <svg class="tabliczka" viewBox="0 0 300 300" role="img"
+             aria-label="Rysunek z tabliczki YBC 7289: kwadrat z dwiema przekątnymi i liczbami zapisanymi wzdłuż boku i przekątnej">
+          <rect x="14" y="14" width="272" height="272" rx="10"
+                fill="none" stroke="currentColor" stroke-width="1" opacity="0.35"/>
+          <rect x="60" y="60" width="180" height="180"
+                fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <line x1="60" y1="60" x2="240" y2="240" stroke="currentColor" stroke-width="1.5"/>
+          <line x1="240" y1="60" x2="60" y2="240" stroke="currentColor" stroke-width="1.5"/>
+          <g class="accent" fill="currentColor"
+             font-family="ui-monospace, monospace" font-size="11">
+            <text x="150" y="52" text-anchor="middle">30</text>
+            <text x="152" y="140" text-anchor="start" transform="rotate(45 152 140)">1;24,51,10</text>
+            <text x="150" y="268" text-anchor="middle">42;25,35</text>
+          </g>
+        </svg>
+        <figcaption class="podpis">
+          YBC 7289, tabliczka z kolekcji Uniwersytetu Yale. Bok kwadratu wynosi 30,
+          wzdłuż przekątnej zapisano mnożnik 1;24,51,10 i wynik 42;25,35.
+        </figcaption>
+      </figure>
+    </div>
+
+    <div class="os">
+      <article class="os-wpis">
+        <div class="os-kiedy">ok. 1800 p.n.e.</div>
+        <div>
+          <h3>Glina, Mezopotamia</h3>
+          <p>
+            Na tabliczce YBC 7289 ktoś zapisał przekątną kwadratu o boku 30.
+            Użyty mnożnik to w zapisie sześćdziesiątkowym <strong>1;24,51,10</strong>,
+            czyli 1 + 24/60 + 51/60² + 10/60³ = 1,41421296…
+          </p>
+          <p>
+            Prawdziwe √2 to 1,41421356…, więc skryba pomylił się dopiero na
+            siódmym miejscu po przecinku. <strong>Błąd jest mniejszy niż sześć
+            milionowych procenta</strong>. Nikt nie wie, jak dokładnie to
+            policzył, ale wynik zgadza się z tym, co daje kilka kroków metody
+            opisanej w tym projekcie.
+          </p>
+        </div>
+      </article>
+
+      <article class="os-wpis">
+        <div class="os-kiedy">I w. n.e.</div>
+        <div>
+          <h3>Heron z Aleksandrii</h3>
+          <p>
+            W dziele <em>Metrica</em> Heron podaje przepis wprost: żeby znaleźć
+            bok kwadratu o polu <em>n</em>, weź dowolną liczbę, podziel przez nią
+            <em>n</em>, a potem uśrednij wynik z liczbą, od której zacząłeś.
+            Powtarzaj.
+          </p>
+          <p>
+            Stąd nazwa <strong>metoda Herona</strong>, używana wymiennie
+            z <strong>metodą babilońską</strong>. Heron opisał ją jako pierwszy,
+            ale jej nie wymyślił. Zapisał to, co liczono już od półtora tysiąca lat.
+          </p>
+        </div>
+      </article>
+
+      <article class="os-wpis">
+        <div class="os-kiedy">1669</div>
+        <div>
+          <h3>Newton uogólnia</h3>
+          <p>
+            Isaac Newton, a po nim Joseph Raphson, opisują ogólną metodę
+            szukania miejsc zerowych funkcji przez kolejne przybliżenia styczną.
+            Gdy zastosować ją do równania <em>x² − n = 0</em>, wychodzi
+            <strong>dokładnie wzór Herona</strong>.
+          </p>
+          <p>
+            Metoda babilońska okazuje się więc szczególnym przypadkiem czegoś
+            znacznie większego, i to tłumaczy, dlaczego zbiega tak szybko.
+          </p>
+        </div>
+      </article>
+
+      <article class="os-wpis">
+        <div class="os-kiedy">dziś</div>
+        <div>
+          <h3>Jedna instrukcja</h3>
+          <p>
+            W dzisiejszym procesorze pierwiastek to pojedyncza instrukcja
+            maszynowa. Wywołanie <code>sqrt()</code> nie uruchamia żadnej pętli, tylko
+            schodzi do układu scalonego, który dostaje wynik w kilkanaście
+            taktów zegara.
+          </p>
+          <p>
+            Ale i ten układ startuje od przybliżenia z tablicy i poprawia je
+            kilkoma krokami. <strong>To wciąż jest metoda Herona</strong>, tylko
+            wypalona w krzemie.
+          </p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===== 4. zwrotnica ===== -->
+  <section class="scena zwrotnica reveal">
+    <h2>Tyle historii</h2>
+    <p class="tresc" style="max-width: 48ch;">
+      Reszta to matematyka, kod i pomiary: wzór i dowód jego zbieżności,
+      implementacje w Pythonie, C++ i arkuszu kalkulacyjnym, oraz eksperyment,
+      w którym milion pierwiastków liczony jest na pięć sposobów i mierzony
+      stoperem.
+    </p>
+    <a class="wejscie" href="pracownia.html">Pracownia <span aria-hidden="true">→</span></a>
+  </section>
+
+  <!-- ===== 5. źródła ===== -->
+  <section class="scena reveal" id="zrodla">
+    <h2>Źródła</h2>
+    <ul class="zrodla">
+      <li>
+        Yale Babylonian Collection, tabliczka <strong>YBC 7289</strong>:
+        <a href="https://en.wikipedia.org/wiki/YBC_7289" rel="noopener">opis i fotografia</a>.
+      </li>
+      <li>
+        David Fowler, Eleanor Robson, <em>Square Root Approximations in Old
+        Babylonian Mathematics</em>, Historia Mathematica 25 (1998), s. 366–378.
+      </li>
+      <li>
+        Heron z Aleksandrii, <em>Metrica</em>, księga I: opis metody
+        przybliżania pierwiastka.
+      </li>
+      <li>
+        <a href="https://en.wikipedia.org/wiki/Methods_of_computing_square_roots" rel="noopener">Methods
+        of computing square roots</a>: przegląd metod numerycznych.
+      </li>
+      <li>
+        <strong>IEEE 754-2019</strong> — standard arytmetyki zmiennoprzecinkowej,
+        stąd pojęcie ULP używane w tym projekcie do pomiaru błędu.
+      </li>
+      <li>
+        Dokumentacja: <a href="https://docs.python.org/3/library/math.html" rel="noopener">moduł
+        <code>math</code></a> w Pythonie oraz
+        <a href="https://en.cppreference.com/w/cpp/numeric/math/sqrt" rel="noopener"><code>std::sqrt</code></a>
+        w C++.
+      </li>
+    </ul>
+  </section>
+
+  <footer class="site">
+    <span>squareRoot/ · projekt szkolny</span>
+    <a href="https://github.com/Alexander-288/informatica/tree/main/squareRoot">kod źródłowy</a>
+  </footer>
+</main>
+
+<script type="module">
+  import { wlaczUjawnianie } from './assets/scrolly.js';
+  wlaczUjawnianie();
+</script>
+</body>
+</html>
