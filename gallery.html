@@ -74,12 +74,12 @@
     z-index: 0;
     overflow: hidden;
     color: var(--text);
-    opacity: 0.075;
+    opacity: 0.038;
     pointer-events: none;
     -webkit-mask-image: linear-gradient(90deg, #000 55%, transparent 100%);
     mask-image: linear-gradient(90deg, #000 55%, transparent 100%);
   }
-  :root[data-theme="dark"] .band { opacity: 0.1; }
+  :root[data-theme="dark"] .band { opacity: 0.055; }
   .band svg { width: 100%; height: 100%; display: block; }
 
   .card {
@@ -175,7 +175,10 @@
     <p class="count" id="count"></p>
   </header>
 
+  <!-- Tag filters, parked for now - drop the comment markers here and in the
+       script below to bring them back.
   <div class="filters" id="filters"></div>
+  -->
   <div class="timeline" id="timeline"></div>
   <p class="empty" id="empty" hidden>No projects match that filter.</p>
 
@@ -188,7 +191,6 @@
 
 <script type="module">
 const timeline = document.getElementById('timeline');
-const filters = document.getElementById('filters');
 const empty = document.getElementById('empty');
 
 let projects = [];
@@ -199,6 +201,7 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 // ---------- band patterns: the per-row easter egg ----------
 // Each is a <pattern> body, tiled behind one row and inheriting currentColor.
 const PATTERNS = {
+  root: { size: 56, body: '<path d="M6 30h6v6h6v6h6V24h20" fill="none" stroke="currentColor" stroke-width="3"/>' },
   converge: { size: 60, body: '<rect x="4" y="4" width="52" height="52" fill="none" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"/><rect x="24" y="24" width="12" height="12" fill="currentColor"/>' },
   grid: { size: 32, body: '<path d="M0 0H32M0 0V32" stroke="currentColor" stroke-width="2" fill="none"/>' },
   dither: { size: 16, body: '<rect width="8" height="8" fill="currentColor"/><rect x="8" y="8" width="8" height="8" fill="currentColor"/>' },
@@ -376,6 +379,11 @@ function drawSpine() {
 }
 
 // ---------- filters ----------
+// Parked, not deleted. Uncomment this block, the markup above and the
+// renderFilters() call at the bottom to put the tag buttons back.
+/*
+const filters = document.getElementById('filters');
+
 function renderFilters() {
   const tags = [...new Set(projects.flatMap((p) => p.tags ?? []))].sort();
   filters.innerHTML = ['all', ...tags]
@@ -390,6 +398,7 @@ filters.addEventListener('click', (e) => {
   renderFilters();
   render();
 });
+*/
 
 const redraw = () => requestAnimationFrame(drawSpine);
 window.addEventListener('resize', redraw);
@@ -404,7 +413,7 @@ try {
   if (data.generated) {
     document.getElementById('generated').textContent = `index generated ${new Date(data.generated).toISOString().slice(0, 10)}`;
   }
-  renderFilters();
+  // renderFilters();
   render();
 } catch (err) {
   timeline.innerHTML = '';

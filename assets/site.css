@@ -4,7 +4,7 @@
    (when the visitor has not chosen) or by [data-theme] set from assets/theme.js. */
 :root {
   --bg: #F6F4F1;
-  --bg-grid: #e7e3dd;
+  --bg-grid: #efece8;
   --surface: #fffefc;
   --surface-2: #eeeae4;
   --border: #d8d3cb;
@@ -26,7 +26,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #222526;
-    --bg-grid: #2b2e30;
+    --bg-grid: #272a2c;
     --surface: #292c2e;
     --surface-2: #323638;
     --border: #3d4245;
@@ -44,7 +44,7 @@
 
 :root[data-theme="dark"] {
   --bg: #222526;
-  --bg-grid: #2b2e30;
+  --bg-grid: #272a2c;
   --surface: #292c2e;
   --surface-2: #323638;
   --border: #3d4245;

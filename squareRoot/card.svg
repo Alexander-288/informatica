@@ -3,7 +3,12 @@
     Heron's method, drawn honestly: every rectangle here has the same area.
     Each step replaces x with the average of x and n/x, so the rectangle of
     area n gets less and less oblong until it settles on the square of side
-    sqrt(n). Sides below are the real iterates for n = 10000, x0 = 250.
+    sqrt(n). The sides below are the real iterates for n = 10000, x0 = 250:
+    250x40, 145x69, 107x93.5, then 100x100.
+
+    The radical is a staircase of 12px blocks laid on a 12px pitch, and every
+    block shares a full edge with the next one. Blocks that only met at their
+    corners left hairline gaps once the card tilts it.
   -->
   <defs>
     <pattern id="sr-dither" width="8" height="8" patternUnits="userSpaceOnUse">
@@ -12,31 +17,37 @@
     </pattern>
   </defs>
 
-  <g stroke="currentColor" stroke-width="3">
-    <!-- 250 x 40 -->
-    <rect x="5" y="110" width="250" height="40" opacity="0.28"/>
-    <!-- 145 x 69 -->
-    <rect x="57.5" y="95.5" width="145" height="69" opacity="0.45"/>
-    <!-- 107 x 93.5 -->
-    <rect x="76.5" y="83" width="107" height="93.5" opacity="0.7"/>
+  <!-- the iterates, converging inward -->
+  <g stroke="currentColor" stroke-linejoin="miter">
+    <rect x="5" y="110" width="250" height="40" stroke-width="2" opacity="0.3"/>
+    <rect x="57.5" y="95.5" width="145" height="69" stroke-width="3" opacity="0.5"/>
+    <rect x="76.5" y="83" width="107" height="93.5" stroke-width="3" opacity="0.75"/>
   </g>
 
   <!-- the limit: a 100 x 100 square, filled with the site's dither -->
-  <rect x="80" y="80" width="100" height="100" fill="url(#sr-dither)" opacity="0.55"/>
-  <rect x="80" y="80" width="100" height="100" stroke="currentColor" stroke-width="4"/>
+  <rect x="80" y="80" width="100" height="100" fill="url(#sr-dither)" opacity="0.5"/>
+  <rect x="80" y="80" width="100" height="100" stroke="currentColor" stroke-width="5"/>
 
-  <!-- radical sign, built from blocks rather than drawn as a stroke -->
+  <!-- the radical: one connected staircase, 12px blocks on a 12px pitch -->
   <g class="accent" fill="currentColor">
-    <rect x="8" y="44" width="12" height="12"/>
-    <rect x="20" y="56" width="12" height="12"/>
-    <rect x="32" y="68" width="12" height="12"/>
-    <rect x="32" y="56" width="12" height="12"/>
-    <rect x="44" y="44" width="12" height="12"/>
-    <rect x="44" y="32" width="12" height="12"/>
-    <rect x="56" y="20" width="12" height="12"/>
-    <rect x="68" y="20" width="12" height="12"/>
-    <rect x="80" y="20" width="12" height="12"/>
-    <rect x="92" y="20" width="12" height="12"/>
+    <rect x="6" y="54" width="12" height="12"/>
+    <rect x="18" y="54" width="12" height="12"/>
+    <rect x="18" y="66" width="12" height="12"/>
+    <rect x="30" y="66" width="12" height="12"/>
+    <rect x="30" y="78" width="12" height="12"/>
+    <rect x="42" y="78" width="12" height="12"/>
+    <rect x="42" y="90" width="12" height="12"/>
+    <rect x="54" y="78" width="12" height="12"/>
+    <rect x="54" y="66" width="12" height="12"/>
+    <rect x="54" y="54" width="12" height="12"/>
+    <rect x="66" y="54" width="12" height="12"/>
+    <rect x="66" y="42" width="12" height="12"/>
+    <rect x="66" y="30" width="12" height="12"/>
+    <rect x="66" y="18" width="12" height="12"/>
+    <rect x="78" y="18" width="12" height="12"/>
+    <rect x="90" y="18" width="12" height="12"/>
+    <rect x="102" y="18" width="12" height="12"/>
+    <rect x="114" y="18" width="12" height="12"/>
   </g>
 
   <!-- the point everything converges on -->
