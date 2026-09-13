@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>404 — informatica</title>
+<meta name="robots" content="noindex">
+<!--
+  GitHub Pages serves this file for any missing path, including deep ones like
+  /informatica/a/b/c. Relative links would resolve against that path and break,
+  so this page carries its own styles and script and works out its own links.
+-->
+<style>
+  :root {
+    --bg: #F6F4F1;
+    --text: #222526;
+    --text-2: #3d4245;
+    --muted: #6d7173;
+    --border: #d8d3cb;
+    --surface-2: #eeeae4;
+    --accent: #9C90FC;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    --sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #222526;
+      --text: #F6F4F1;
+      --text-2: #d7d3cd;
+      --muted: #9aa0a2;
+      --border: #3d4245;
+      --surface-2: #323638;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #222526;
+    --text: #F6F4F1;
+    --text-2: #d7d3cd;
+    --muted: #9aa0a2;
+    --border: #3d4245;
+    --surface-2: #323638;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: 2rem 1rem;
+    font-family: var(--sans);
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .lost {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(1.5rem, 4vw, 2.5rem);
+    text-align: center;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(1.35rem, 3.6vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  canvas {
+    display: block;
+    width: min(680px, 100%);
+    height: auto;
+  }
+
+  .code {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .code .path { color: var(--text); }
+
+  /* the button, matching the rest of the site */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.7rem 1.3rem;
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--text);
+    background: transparent;
+    border: 2px solid var(--text);
+    border-radius: 0;
+    transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease, color 120ms ease;
+  }
+  .btn:hover { color: var(--bg); background: var(--text); box-shadow: 6px 6px 0 0 var(--accent); }
+  .btn:active { transform: translate(2px, 2px); box-shadow: 3px 3px 0 0 var(--accent); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+  /* the toggle, same shape as every other page */
+  .theme-toggle {
+    position: fixed;
+    top: clamp(0.9rem, 2.5vw, 1.6rem);
+    right: clamp(0.9rem, 2.5vw, 1.6rem);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.3rem 0.4rem;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+    background: var(--bg);
+    border: 2px solid var(--text);
+    box-shadow: 4px 4px 0 0 var(--accent);
+  }
+  .theme-toggle .track {
+    position: relative; width: 34px; height: 18px; flex: none;
+    background: var(--surface-2); border: 2px solid var(--text);
+    box-shadow: inset 0 0 0 2px var(--bg);
+  }
+  .theme-toggle .knob {
+    position: absolute; top: 2px; left: 2px; width: 12px; height: 10px;
+    background: var(--text); transition: transform 110ms steps(3);
+  }
+  .theme-toggle[aria-pressed="true"] .knob { transform: translateX(14px); background: var(--accent); }
+  .theme-toggle .label { display: none; }
+  @media (min-width: 620px) { .theme-toggle .label { display: inline; } }
+
+  @media (prefers-reduced-motion: reduce) { .btn, .theme-toggle .knob { transition: none; } }
+</style>
+</head>
+<body>
+<button class="theme-toggle" type="button" aria-pressed="false" aria-label="Toggle theme">
+  <span class="track"><span class="knob"></span></span>
+  <span class="label">light</span>
+</button>
+
+<main class="lost">
+  <h1>We all get lost sometimes.</h1>
+  <canvas id="art" width="1360" height="520" role="img" aria-label="404"></canvas>
+  <p class="code">404 · <span class="path" id="path"></span></p>
+  <a class="btn" id="home" href="/">Take me home</a>
+</main>
+
+<script>
+// ---- theme, inlined so this page needs nothing else ----
+(() => {
+  const KEY = 'informatica-theme';
+  const root = document.documentElement;
+  let stored = null;
+  try { stored = localStorage.getItem(KEY); } catch {}
+  if (stored === 'dark' || stored === 'light') root.setAttribute('data-theme', stored);
+
+  const dark = () => (root.getAttribute('data-theme')
+    ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')) === 'dark';
+
+  const btn = document.querySelector('.theme-toggle');
+  const paint = () => {
+    btn.setAttribute('aria-pressed', String(dark()));
+    btn.querySelector('.label').textContent = dark() ? 'dark' : 'light';
+    draw();
+  };
+
+  btn.addEventListener('click', () => {
+    const next = dark() ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem(KEY, next); } catch {}
+    paint();
+  });
+
+  window.__paintTheme = paint;
+})();
+
+// ---- home link: the site root, wherever this page was served from ----
+{
+  const parts = location.pathname.split('/').filter(Boolean);
+  // on a project site the first segment is the repo; on a local server there is none
+  const base = location.hostname.endsWith('github.io') && parts.length ? `/${parts[0]}/` : '/';
+  document.getElementById('home').setAttribute('href', base);
+  document.getElementById('path').textContent = location.pathname;
+}
+
+// ---- the dithered 404 ----
+const canvas = document.getElementById('art');
+const ctx = canvas.getContext('2d');
+const CELL = 26;        // block size
+const DOT = 5;          // dither checker size inside each block
+
+const hash = (x, y) => {
+  const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+  return n - Math.floor(n);
+};
+
+// a small checkerboard used as the fill, which is what gives the blocks their texture
+function checker(colour) {
+  const tile = document.createElement('canvas');
+  tile.width = tile.height = DOT * 2;
+  const c = tile.getContext('2d');
+  c.fillStyle = colour;
+  c.fillRect(0, 0, DOT, DOT);
+  c.fillRect(DOT, DOT, DOT, DOT);
+  return ctx.createPattern(tile, 'repeat');
+}
+
+function draw() {
+  const w = canvas.width;
+  const h = canvas.height;
+  const ink = getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#222526';
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#9C90FC';
+
+  // rasterise "404" once, off-screen, then read it back a block at a time
+  const mask = document.createElement('canvas');
+  mask.width = w;
+  mask.height = h;
+  const m = mask.getContext('2d');
+  m.fillStyle = '#fff';
+  m.textAlign = 'center';
+  m.textBaseline = 'middle';
+  m.letterSpacing = '18px';
+  m.font = `700 ${Math.round(h * 0.84)}px ${getComputedStyle(document.body).fontFamily}`;
+  m.fillText('404', w / 2, h / 2);
+  const pixels = m.getImageData(0, 0, w, h).data;
+
+  const covered = (x, y) => {
+    x = Math.round(x); y = Math.round(y);
+    if (x < 0 || y < 0 || x >= w || y >= h) return false;
+    return pixels[((y * w + x) * 4) + 3] > 128;
+  };
+
+  // how much of a cell the glyph fills, sampled on a 4x4 grid
+  const coverage = (cx, cy) => {
+    let hits = 0;
+    for (let a = 0; a < 4; a++) {
+      for (let b = 0; b < 4; b++) {
+        if (covered(cx + (a + 0.5) * CELL / 4, cy + (b + 0.5) * CELL / 4)) hits++;
+      }
+    }
+    return hits / 16;
+  };
+
+  ctx.clearRect(0, 0, w, h);
+  const inkFill = checker(ink);
+  const accentFill = checker(accent);
+
+  for (let y = 0; y < h; y += CELL) {
+    for (let x = 0; x < w; x += CELL) {
+      const n = hash(x / CELL, y / CELL);
+      const fill = coverage(x, y);
+      if (fill === 0) continue;
+
+      // solid where the glyph is, ragged where a cell is only clipped by it
+      if (fill < 0.2) continue;
+      if (fill < 0.5 && n > 0.45) continue;
+      if (fill > 0.9 && n > 0.98) continue;       // the odd hole punched in the solid
+
+      // some blocks run past their cell, up or down, which is what reads as glitched
+      const m = hash(y / CELL, x / CELL);
+      const grow = n > 0.9 ? 1 + Math.floor(m * 3) : 0;           // 0-3 extra cells
+      const up = grow && m < 0.5 ? CELL * grow : 0;
+      const down = grow && m >= 0.5 ? CELL * grow : 0;
+
+      ctx.fillStyle = n > 0.96 ? accentFill : inkFill;
+      ctx.fillRect(x, y - up, CELL, CELL + up + down);
+    }
+  }
+}
+
+draw();
+document.fonts?.ready.then(draw);
+window.addEventListener('resize', draw);
+</script>
+</body>
+</html>

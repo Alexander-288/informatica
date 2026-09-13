@@ -8,12 +8,20 @@
 <link rel="stylesheet" href="assets/site.css">
 <script src="assets/theme.js"></script>
 <style>
-  body { background-image: none; }
+  body {
+    background-image: none;
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;          /* the index sits in the middle of the window */
+  }
 
   .frame {
+    width: 100%;
     max-width: 860px;
-    margin: 0 auto;
-    padding: clamp(2.5rem, 7vw, 5rem) clamp(1rem, 4vw, 2rem) 3rem;
+    max-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 4vw, 2rem);
   }
 
   /* ---- breadcrumb head ---- */
@@ -37,7 +45,9 @@
   /* ---- the tree ---- */
   .viewport {
     position: relative;          /* makes row offsetTop measure from the scroll box */
-    max-height: min(62vh, 620px);
+    flex: 1 1 auto;
+    min-height: 0;               /* so the tree scrolls instead of pushing the frame taller */
+    max-height: 620px;
     overflow-y: auto;
     overscroll-behavior: contain;
     padding: 1.25rem 0;
@@ -80,12 +90,15 @@
     color: var(--muted);
   }
 
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin: 1.25rem 0 0; }
+
   /* ---- footer key hints ---- */
   .keys {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 0.4rem 1.1rem;
-    margin-top: 1rem;
+    margin-top: 1.1rem;
     font-family: var(--mono);
     font-size: 0.7rem;
     color: var(--muted);
@@ -128,6 +141,11 @@
   </div>
 
   <div class="divider"></div>
+
+  <p class="actions">
+    <a class="btn prev ghost" href="index.html"><span class="arrow" aria-hidden="true">&#9666;</span> Home</a>
+    <a class="btn ghost" href="gallery.html">Gallery</a>
+  </p>
 
   <p class="keys">
     <span><kbd>&uarr;</kbd><kbd>&darr;</kbd> navigate</span>
@@ -232,8 +250,16 @@ function open(node) {
 let typed = '';
 let typedAt = 0;
 
-viewport.addEventListener('keydown', (e) => {
+window.addEventListener('keydown', (e) => {
   if (!rows.length) return;
+  // stay out of the way of form fields and browser shortcuts
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const t = e.target;
+  if (t instanceof HTMLElement) {
+    if (t.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName)) return;
+    // a focused button or link handles its own keys (the home button, the theme toggle)
+    if (t.closest('a, button') && !viewport.contains(t)) return;
+  }
   const row = rows[sel];
   const node = row.node;
   const isOpenDir = node.type === 'dir' && !collapsed.has(node.path);
@@ -267,7 +293,7 @@ viewport.addEventListener('keydown', (e) => {
 
     default:
       // typeahead: jump to the next row whose name starts with what was typed
-      if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      if (e.key.length === 1 && e.key !== ' ') {
         const now = Date.now();
         typed = now - typedAt < 700 ? typed + e.key : e.key;
         typedAt = now;
