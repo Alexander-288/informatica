@@ -1,0 +1,10 @@
+kompilator: g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 16.2.0
+sciezka: C:\Users\Olek\scoop\apps\mingw\current\bin\g++.exe
+flagi: -O2 -std=c++17 -march=native
+zegar: std::chrono::steady_clock
+procesor: Intel(R) Core(TM) i7-9750HF CPU @ 2.60GHz
+system: Windows 11 (build 10.0.26200)
+zakres: 1..1000000
+proby: 5
+suma_kontrolna: 666667166.4588418
+uwaga: scoop nie utworzyl shimow, kompilator wywolujemy pelna sciezka

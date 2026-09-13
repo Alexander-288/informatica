@@ -10,3 +10,6 @@ GEMINI.md
 .impeccable/
 .cursor/
 .aider*
+
+# skompilowany benchmark - budowany lokalnie przez program/cpp/build.sh
+squareRoot/program/cpp/benchmark.exe
