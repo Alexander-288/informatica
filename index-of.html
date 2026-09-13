@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>index of — informatica</title>
+<meta name="description" content="Generated file index of the informatica repository: a keyboard-navigable tree that opens any file on GitHub.">
+<link rel="stylesheet" href="assets/site.css">
+<script src="assets/theme.js"></script>
+<style>
+  body { background-image: none; }
+
+  .frame {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: clamp(2.5rem, 7vw, 5rem) clamp(1rem, 4vw, 2rem) 3rem;
+  }
+
+  /* ---- breadcrumb head ---- */
+  .crumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin: 0 0 1rem;
+    font-family: var(--mono);
+    font-size: 0.86rem;
+  }
+  .crumb a { color: var(--muted); text-decoration: none; }
+  .crumb a:hover { color: var(--accent-ink); }
+  .crumb .sep { color: var(--muted); opacity: 0.5; }
+  .crumb .here { color: var(--text); }
+  .crumb .tally { margin-left: auto; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+  .divider { height: 1px; background: var(--border); }
+
+  /* ---- the tree ---- */
+  .viewport {
+    position: relative;          /* makes row offsetTop measure from the scroll box */
+    max-height: min(62vh, 620px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1.25rem 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .viewport:focus { outline: none; }
+  .viewport:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .viewport::-webkit-scrollbar { width: 10px; }
+  .viewport::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .row {
+    display: block;
+    padding: 0.06rem 1rem;
+    font-family: var(--mono);
+    font-size: 0.84rem;
+    line-height: 1.62;
+    white-space: pre;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .row:hover { background: var(--surface-2); }
+  .row .pre { color: var(--muted); opacity: 0.45; }
+  .row .caret { color: var(--muted); }
+  .row.file .name { color: var(--muted); }
+  .row.dir .name { color: var(--text); }
+
+  /* the selection sits on the name itself, terminal-style */
+  .row .name { padding: 0 0.25rem; }
+  .row[aria-selected="true"] .name {
+    background: var(--accent);
+    color: #222526;
+  }
+  .row[aria-selected="true"] .caret { color: var(--accent-ink); }
+
+  .note {
+    padding: 2rem 1rem;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  /* ---- footer key hints ---- */
+  .keys {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.1rem;
+    margin-top: 1rem;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+  .keys kbd {
+    font: inherit;
+    color: var(--text);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    padding: 0 0.3rem;
+  }
+  .keys .gen { margin-left: auto; }
+
+  @media (max-width: 560px) {
+    .row { font-size: 0.76rem; }
+    .keys .gen { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<button class="theme-toggle" type="button" aria-pressed="false" aria-label="Toggle theme">
+  <span class="track"><span class="knob"></span></span>
+  <span class="label">light</span>
+</button>
+
+<main class="frame">
+  <p class="crumb">
+    <a href="index.html">informatica</a>
+    <span class="sep">/</span>
+    <a href="gallery.html">gallery</a>
+    <span class="sep">/</span>
+    <span class="here">index of</span>
+    <span class="tally" id="tally"></span>
+  </p>
+
+  <div class="divider"></div>
+
+  <div class="viewport" id="viewport" tabindex="0" role="tree" aria-label="Repository files">
+    <p class="note" id="note">reading tree.json&hellip;</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <p class="keys">
+    <span><kbd>&uarr;</kbd><kbd>&darr;</kbd> navigate</span>
+    <span><kbd>&larr;</kbd><kbd>&rarr;</kbd> collapse</span>
+    <span><kbd>enter</kbd> open on github</span>
+    <span><kbd>esc</kbd> back</span>
+    <span class="gen" id="generated"></span>
+  </p>
+</main>
+
+<script type="module">
+const REPO = 'https://github.com/Alexander-288/informatica';
+const BRANCH = 'main';
+
+const viewport = document.getElementById('viewport');
+const note = document.getElementById('note');
+
+let rows = [];          // the currently visible rows, in display order
+let sel = 0;            // index into rows
+const collapsed = new Set();
+let tree = null;
+
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const urlFor = (node) => `${REPO}/${node.type === 'dir' ? 'tree' : 'blob'}/${BRANCH}/${node.path}`;
+
+// ---- flatten the tree into rows, building the ascii gutter as we go ----
+function flatten(nodes, ancestors = [], parent = null, out = []) {
+  nodes.forEach((node, i) => {
+    const last = i === nodes.length - 1;
+    const pre = ancestors.map((a) => (a ? '    ' : '│   ')).join('') + (last ? '└── ' : '├── ');
+    out.push({ node, pre, parent, depth: ancestors.length });
+    if (node.type === 'dir' && !collapsed.has(node.path)) {
+      flatten(node.children, [...ancestors, last], node.path, out);
+    }
+  });
+  return out;
+}
+
+function render(keepSelection = true) {
+  const previous = rows[sel]?.node.path;
+  rows = flatten(tree.children);
+
+  if (keepSelection && previous !== undefined) {
+    const found = rows.findIndex((r) => r.node.path === previous);
+    if (found >= 0) sel = found;
+  }
+  sel = Math.max(0, Math.min(sel, rows.length - 1));
+
+  viewport.innerHTML = rows.map((row, i) => {
+    const { node } = row;
+    const open = node.type === 'dir' && !collapsed.has(node.path);
+    const caret = node.type === 'dir' ? (open ? '▾ ' : '▸ ') : '';
+    const name = node.type === 'dir' ? `${node.name}/` : node.name;
+    return `<a class="row ${node.type}" id="row-${i}" role="treeitem" href="${esc(urlFor(node))}"` +
+      ` aria-level="${row.depth + 1}" aria-selected="${i === sel}"` +
+      (node.type === 'dir' ? ` aria-expanded="${open}"` : '') +
+      ` data-index="${i}"><span class="pre">${row.pre}</span>` +
+      `<span class="caret">${caret}</span><span class="name">${esc(name)}</span></a>`;
+  }).join('');
+
+  viewport.setAttribute('aria-activedescendant', `row-${sel}`);
+}
+
+// ---- keep the selected row somewhere near the middle ----
+function reveal() {
+  const el = viewport.querySelector(`#row-${sel}`);
+  if (!el) return;
+
+  const view = viewport.clientHeight;
+  const top = el.offsetTop;
+  const bottom = top + el.offsetHeight;
+  const band = view * 0.3;                      // dead zone: only scroll once the row leaves it
+
+  if (top < viewport.scrollTop + band || bottom > viewport.scrollTop + view - band) {
+    const target = top - (view - el.offsetHeight) / 2;
+    viewport.scrollTop = Math.max(0, Math.min(target, viewport.scrollHeight - view));
+  }
+}
+
+function select(i) {
+  if (!rows.length) return;
+  const next = Math.max(0, Math.min(i, rows.length - 1));
+  if (next === sel) return reveal();
+  viewport.querySelector(`#row-${sel}`)?.setAttribute('aria-selected', 'false');
+  sel = next;
+  viewport.querySelector(`#row-${sel}`)?.setAttribute('aria-selected', 'true');
+  viewport.setAttribute('aria-activedescendant', `row-${sel}`);
+  reveal();
+}
+
+function setOpen(path, open) {
+  if (open) collapsed.delete(path); else collapsed.add(path);
+  render();
+  reveal();
+}
+
+function open(node) {
+  window.open(urlFor(node), '_blank', 'noopener');
+}
+
+// ---- keyboard ----
+let typed = '';
+let typedAt = 0;
+
+viewport.addEventListener('keydown', (e) => {
+  if (!rows.length) return;
+  const row = rows[sel];
+  const node = row.node;
+  const isOpenDir = node.type === 'dir' && !collapsed.has(node.path);
+
+  switch (e.key) {
+    case 'ArrowDown': select(sel + 1); break;
+    case 'ArrowUp': select(sel - 1); break;
+    case 'PageDown': select(sel + 10); break;
+    case 'PageUp': select(sel - 10); break;
+    case 'Home': select(0); break;
+    case 'End': select(rows.length - 1); break;
+
+    case 'ArrowRight':
+      if (node.type === 'dir' && !isOpenDir) setOpen(node.path, true);
+      else if (isOpenDir && node.children.length) select(sel + 1);
+      break;
+
+    case 'ArrowLeft':
+      if (isOpenDir) setOpen(node.path, false);
+      else if (row.parent !== null) select(rows.findIndex((r) => r.node.path === row.parent));
+      break;
+
+    case 'Enter':
+      if (node.type === 'dir' && !e.shiftKey) setOpen(node.path, !isOpenDir);
+      else open(node);
+      break;
+
+    case 'Escape':
+      window.location.href = 'gallery.html';
+      break;
+
+    default:
+      // typeahead: jump to the next row whose name starts with what was typed
+      if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const now = Date.now();
+        typed = now - typedAt < 700 ? typed + e.key : e.key;
+        typedAt = now;
+        const match = (r) => r.node.name.toLowerCase().startsWith(typed.toLowerCase());
+        const after = rows.slice(sel + 1).findIndex(match);
+        const found = after >= 0 ? sel + 1 + after : rows.findIndex(match);
+        if (found >= 0) select(found);
+      }
+      return;
+  }
+  e.preventDefault();
+});
+
+// ---- mouse ----
+viewport.addEventListener('click', (e) => {
+  const el = e.target.closest('.row');
+  if (!el) return;
+  const i = Number(el.dataset.index);
+  const node = rows[i].node;
+
+  // let ctrl / cmd / middle click fall through to the real href
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) { select(i); return; }
+
+  e.preventDefault();
+  select(i);
+  if (node.type === 'dir') setOpen(node.path, collapsed.has(node.path));
+  else open(node);
+});
+
+viewport.addEventListener('focus', () => reveal());
+
+// ---- load ----
+try {
+  const data = await fetch('tree.json', { cache: 'no-cache' }).then((r) => r.json());
+  tree = data.tree;
+  document.getElementById('tally').textContent = `${data.files} files · ${data.dirs} folders`;
+  if (data.generated) {
+    document.getElementById('generated').textContent = `generated ${new Date(data.generated).toISOString().slice(0, 10)}`;
+  }
+  render(false);
+  reveal();
+} catch (err) {
+  note.textContent = 'Could not read tree.json. Open this page over http, not file://';
+}
+</script>
+</body>
+</html>

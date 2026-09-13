@@ -1,4 +1,4 @@
-name: Build gallery index
+name: Build gallery and file index
 
 on:
   push:
@@ -25,14 +25,17 @@ jobs:
       - name: Scan project folders
         run: node scripts/build-gallery.mjs
 
-      - name: Commit projects.json if it changed
+      - name: Scan the file tree
+        run: node scripts/build-tree.mjs
+
+      - name: Commit the generated indexes if they changed
         run: |
-          if git diff --quiet -- projects.json; then
-            echo "No change to projects.json."
+          if git diff --quiet -- projects.json tree.json; then
+            echo "No change to projects.json or tree.json."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add projects.json
+          git add projects.json tree.json
           git commit -m "chore: regenerate gallery index [skip ci]"
           git push

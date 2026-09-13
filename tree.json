@@ -1,0 +1,137 @@
+{
+  "generated": "2026-09-13T07:26:17.413Z",
+  "files": 18,
+  "dirs": 5,
+  "tree": {
+    "name": ".",
+    "path": "",
+    "type": "dir",
+    "children": [
+      {
+        "name": ".github",
+        "path": ".github",
+        "type": "dir",
+        "children": [
+          {
+            "name": "workflows",
+            "path": ".github/workflows",
+            "type": "dir",
+            "children": [
+              {
+                "name": "gallery.yml",
+                "path": ".github/workflows/gallery.yml",
+                "type": "file"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "assets",
+        "path": "assets",
+        "type": "dir",
+        "children": [
+          {
+            "name": "site.css",
+            "path": "assets/site.css",
+            "type": "file"
+          },
+          {
+            "name": "theme.js",
+            "path": "assets/theme.js",
+            "type": "file"
+          }
+        ]
+      },
+      {
+        "name": "scripts",
+        "path": "scripts",
+        "type": "dir",
+        "children": [
+          {
+            "name": "build-gallery.mjs",
+            "path": "scripts/build-gallery.mjs",
+            "type": "file"
+          },
+          {
+            "name": "build-tree.mjs",
+            "path": "scripts/build-tree.mjs",
+            "type": "file"
+          }
+        ]
+      },
+      {
+        "name": "squareRoot",
+        "path": "squareRoot",
+        "type": "dir",
+        "children": [
+          {
+            "name": "index.html",
+            "path": "squareRoot/index.html",
+            "type": "file"
+          },
+          {
+            "name": "project.json",
+            "path": "squareRoot/project.json",
+            "type": "file"
+          },
+          {
+            "name": "README.md",
+            "path": "squareRoot/README.md",
+            "type": "file"
+          }
+        ]
+      },
+      {
+        "name": ".gitattributes",
+        "path": ".gitattributes",
+        "type": "file"
+      },
+      {
+        "name": ".gitignore",
+        "path": ".gitignore",
+        "type": "file"
+      },
+      {
+        "name": ".nojekyll",
+        "path": ".nojekyll",
+        "type": "file"
+      },
+      {
+        "name": "CLAUDE.md",
+        "path": "CLAUDE.md",
+        "type": "file"
+      },
+      {
+        "name": "gallery.html",
+        "path": "gallery.html",
+        "type": "file"
+      },
+      {
+        "name": "index-of.html",
+        "path": "index-of.html",
+        "type": "file"
+      },
+      {
+        "name": "index.html",
+        "path": "index.html",
+        "type": "file"
+      },
+      {
+        "name": "projects.json",
+        "path": "projects.json",
+        "type": "file"
+      },
+      {
+        "name": "README.md",
+        "path": "README.md",
+        "type": "file"
+      },
+      {
+        "name": "tree.json",
+        "path": "tree.json",
+        "type": "file"
+      }
+    ]
+  }
+}

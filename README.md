@@ -10,10 +10,13 @@ One repository for every informatics project, with a GitHub Pages gallery in fro
 .
 ├── index.html              entry page (text + Continue into the gallery)
 ├── gallery.html            gallery page (reads projects.json)
+├── index-of.html           keyboard-navigable file tree (reads tree.json)
 ├── projects.json           generated index, committed to the repo
+├── tree.json               generated file tree, committed to the repo
 ├── assets/site.css         shared styling for every page
 ├── assets/theme.js         shared light/dark toggle
 ├── scripts/build-gallery.mjs   scanner that regenerates projects.json
+├── scripts/build-tree.mjs      scanner that regenerates tree.json
 └── squareRoot/             project 01
     ├── index.html          the live demo
     └── project.json        its metadata
