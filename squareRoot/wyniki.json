@@ -1,0 +1,260 @@
+{
+  "wygenerowano": "2026-09-13",
+  "uwaga": "Plik generowany przez program/python/eksport.py - nie edytuj recznie.",
+  "sumaKontrolna": "666667166.4588418",
+  "metody": [
+    "sqrt",
+    "heron_naive",
+    "heron_fast"
+  ],
+  "czasy": {
+    "python": {
+      "proby": [
+        [
+          0.080387,
+          2.33438,
+          1.114613
+        ],
+        [
+          0.084855,
+          2.192529,
+          1.146515
+        ],
+        [
+          0.080318,
+          2.169132,
+          1.079369
+        ],
+        [
+          0.092655,
+          2.251242,
+          1.160481
+        ],
+        [
+          0.076995,
+          2.861637,
+          1.169642
+        ]
+      ],
+      "srednia": [
+        0.083042,
+        2.361784,
+        1.134124
+      ]
+    },
+    "cpp": {
+      "proby": [
+        [
+          0.001621,
+          0.087025,
+          0.041586
+        ],
+        [
+          0.001506,
+          0.084019,
+          0.039542
+        ],
+        [
+          0.001566,
+          0.085972,
+          0.049113
+        ],
+        [
+          0.002288,
+          0.089531,
+          0.037023
+        ],
+        [
+          0.001548,
+          0.084099,
+          0.049564
+        ]
+      ],
+      "srednia": [
+        0.001706,
+        0.086129,
+        0.043365
+      ]
+    }
+  },
+  "srodowisko": {
+    "python": {
+      "system": "Windows 11 (build 10.0.26200)",
+      "procesor": "Intel(R) Core(TM) i7-9750HF CPU @ 2.60GHz",
+      "python": "3.11.9",
+      "implementacja": "CPython",
+      "zegar": "time.perf_counter",
+      "zakres": "1..1000000",
+      "proby": 5,
+      "kolejnosc": "rotowana miedzy probami"
+    },
+    "cpp": {
+      "kompilator": "g++.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 16.2.0",
+      "flagi": "-O2 -std=c++17 -march=native",
+      "zegar": "std::chrono::steady_clock",
+      "procesor": "Intel(R) Core(TM) i7-9750HF CPU @ 2.60GHz",
+      "system": "Windows 11 (build 10.0.26200)",
+      "zakres": "1..1000000",
+      "proby": 5
+    }
+  },
+  "dokladnosc": {
+    "zakres": "1..1000000",
+    "policzone": 1000000,
+    "maxUlpNaive": 1,
+    "maxUlpFast": 1,
+    "meanUlpNaive": 0.249112,
+    "meanUlpFast": 0.249112
+  },
+  "iteracje": [
+    {
+      "n": 1,
+      "naiwny": 0,
+      "szybki": 0
+    },
+    {
+      "n": 2,
+      "naiwny": 5,
+      "szybki": 4
+    },
+    {
+      "n": 5,
+      "naiwny": 6,
+      "szybki": 3
+    },
+    {
+      "n": 10,
+      "naiwny": 6,
+      "szybki": 4
+    },
+    {
+      "n": 50,
+      "naiwny": 8,
+      "szybki": 3
+    },
+    {
+      "n": 100,
+      "naiwny": 8,
+      "szybki": 4
+    },
+    {
+      "n": 500,
+      "naiwny": 9,
+      "szybki": 4
+    },
+    {
+      "n": 1000,
+      "naiwny": 10,
+      "szybki": 2
+    },
+    {
+      "n": 5000,
+      "naiwny": 11,
+      "szybki": 3
+    },
+    {
+      "n": 10000,
+      "naiwny": 11,
+      "szybki": 4
+    },
+    {
+      "n": 50000,
+      "naiwny": 13,
+      "szybki": 3
+    },
+    {
+      "n": 100000,
+      "naiwny": 13,
+      "szybki": 4
+    },
+    {
+      "n": 500000,
+      "naiwny": 14,
+      "szybki": 4
+    },
+    {
+      "n": 1000000,
+      "naiwny": 15,
+      "szybki": 3
+    }
+  ],
+  "zbieznosc": [
+    {
+      "wariant": "naive",
+      "krok": 0,
+      "x": 2.0,
+      "blad": 0.5857864376269049,
+      "cyfry": 0.38
+    },
+    {
+      "wariant": "naive",
+      "krok": 1,
+      "x": 1.5,
+      "blad": 0.08578643762690485,
+      "cyfry": 1.22
+    },
+    {
+      "wariant": "naive",
+      "krok": 2,
+      "x": 1.4166666666666665,
+      "blad": 0.002453104293571373,
+      "cyfry": 2.76
+    },
+    {
+      "wariant": "naive",
+      "krok": 3,
+      "x": 1.4142156862745097,
+      "blad": 2.123901414519125e-06,
+      "cyfry": 5.82
+    },
+    {
+      "wariant": "naive",
+      "krok": 4,
+      "x": 1.4142135623746899,
+      "blad": 1.5947243525715749e-12,
+      "cyfry": 11.95
+    },
+    {
+      "wariant": "naive",
+      "krok": 5,
+      "x": 1.414213562373095,
+      "blad": 2.220446049250313e-16,
+      "cyfry": 15.8
+    },
+    {
+      "wariant": "fast",
+      "krok": 0,
+      "x": 1.5,
+      "blad": 0.08578643762690485,
+      "cyfry": 1.22
+    },
+    {
+      "wariant": "fast",
+      "krok": 1,
+      "x": 1.4166666666666665,
+      "blad": 0.002453104293571373,
+      "cyfry": 2.76
+    },
+    {
+      "wariant": "fast",
+      "krok": 2,
+      "x": 1.4142156862745097,
+      "blad": 2.123901414519125e-06,
+      "cyfry": 5.82
+    },
+    {
+      "wariant": "fast",
+      "krok": 3,
+      "x": 1.4142135623746899,
+      "blad": 1.5947243525715749e-12,
+      "cyfry": 11.95
+    },
+    {
+      "wariant": "fast",
+      "krok": 4,
+      "x": 1.414213562373095,
+      "blad": 2.220446049250313e-16,
+      "cyfry": 15.8
+    }
+  ]
+}
