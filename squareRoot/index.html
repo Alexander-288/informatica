@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Square Root — Heron's method</title>
+<meta name="description" content="Interactive visualiser for Heron's (Babylonian) method of computing square roots.">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  .layout { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); margin-top: 2.5rem; }
+  @media (min-width: 860px) { .layout { grid-template-columns: 320px minmax(0, 1fr); align-items: start; } }
+
+  label { display: block; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em;
+          text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+  .field + .field { margin-top: 1.1rem; }
+
+  input[type="number"] {
+    width: 100%; font: inherit; font-family: var(--mono); font-size: 1.05rem;
+    padding: 0.6rem 0.7rem; color: var(--text);
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
+  }
+  input[type="number"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  input[type="range"] { width: 100%; accent-color: var(--accent); }
+
+  .row { display: flex; gap: 0.5rem; margin-top: 1.4rem; flex-wrap: wrap; }
+  button {
+    font: inherit; font-family: var(--mono); font-size: 0.8rem; cursor: pointer;
+    padding: 0.55rem 0.95rem; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--text);
+    transition: 120ms ease;
+  }
+  button:hover { border-color: var(--accent); color: var(--accent); }
+  button.primary { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
+  button:disabled { opacity: 0.45; cursor: not-allowed; border-color: var(--border); color: var(--muted); }
+
+  .readout { margin-top: 1.6rem; padding-top: 1.2rem; border-top: 1px solid var(--border); }
+  .readout dt { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em;
+                text-transform: uppercase; color: var(--muted); }
+  .readout dd { margin: 0.2rem 0 1rem; font-family: var(--mono); font-size: 1.05rem; word-break: break-all; }
+  .readout dd.tiny { font-size: 0.85rem; color: var(--muted); }
+
+  canvas { width: 100%; height: auto; display: block; border-radius: 10px; background: var(--surface-2); }
+  .caption { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin: 0.75rem 0 0; line-height: 1.6; }
+
+  table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 0.82rem; }
+  th, td { text-align: right; padding: 0.45rem 0.5rem; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+  td:first-child, th:first-child { text-align: left; color: var(--muted); }
+  tr.current td { background: var(--accent-soft); }
+  .scroll { overflow-x: auto; max-height: 340px; overflow-y: auto; margin-top: 1rem; }
+
+  .formula { font-family: var(--mono); font-size: 0.9rem; color: var(--text); background: var(--surface-2);
+             border-radius: 10px; padding: 0.8rem 0.9rem; margin: 0 0 1.2rem; overflow-x: auto; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <a class="back" href="../">← gallery</a>
+
+  <p class="eyebrow">Project 01 · algorithms</p>
+  <h1>Square root, by hand</h1>
+  <p class="lede">Heron of Alexandria's method: guess a number, average the guess with what it divides into, repeat.
+    It roughly doubles the number of correct digits every step, and this page shows that happening.</p>
+
+  <div class="layout">
+    <section class="panel">
+      <div class="field">
+        <label for="n">n, the radicand</label>
+        <input id="n" type="number" value="2" min="0" step="any">
+      </div>
+      <div class="field">
+        <label for="guess">x₀, starting guess</label>
+        <input id="guess" type="number" value="1" min="0" step="any">
+      </div>
+      <div class="field">
+        <label for="steps">iterations: <span id="stepsOut">6</span></label>
+        <input id="steps" type="range" min="1" max="12" value="6">
+      </div>
+
+      <div class="row">
+        <button id="step" class="primary" type="button">Step ▸</button>
+        <button id="run" type="button">Run all</button>
+        <button id="reset" type="button">Reset</button>
+      </div>
+
+      <dl class="readout">
+        <dt>current estimate</dt>
+        <dd id="est">1</dd>
+        <dt>Math.sqrt(n)</dt>
+        <dd id="truth" class="tiny">1.4142135623730951</dd>
+        <dt>absolute error</dt>
+        <dd id="err" class="tiny">—</dd>
+      </dl>
+    </section>
+
+    <section class="panel">
+      <p class="formula">x<sub>k+1</sub> = ½ · ( x<sub>k</sub> + n / x<sub>k</sub> )</p>
+      <canvas id="stage" width="720" height="360"></canvas>
+      <p class="caption">The rectangle always has area n. Each step replaces its width with the average of the two
+        sides, so it creeps towards the square whose side is √n (the dashed outline).</p>
+
+      <div class="scroll">
+        <table>
+          <thead><tr><th>k</th><th>x<sub>k</sub></th><th>n / x<sub>k</sub></th><th>error</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <footer class="site">
+    <span>squareRoot/ · Heron's method</span>
+    <a href="https://github.com/Alexander-288/informatica/tree/main/squareRoot">source</a>
+  </footer>
+</main>
+
+<script type="module">
+const $ = (id) => document.getElementById(id);
+const nIn = $('n'), guessIn = $('guess'), stepsIn = $('steps');
+const canvas = $('stage');
+const ctx = canvas.getContext('2d');
+
+let history = [];
+let cursor = 0;
+let timer = null;
+
+const css = (name) => getComputedStyle(document.body).getPropertyValue(name).trim();
+
+function heron(n, x0, steps) {
+  const seq = [];
+  let x = x0;
+  for (let k = 0; k <= steps; k++) {
+    seq.push(x);
+    const next = 0.5 * (x + n / x);
+    if (!Number.isFinite(next) || next === x) break;  // converged to double precision
+    x = next;
+  }
+  return seq;
+}
+
+function fmt(v, digits = 15) {
+  if (!Number.isFinite(v)) return '—';
+  return Number(v.toPrecision(digits)).toString();
+}
+
+function rebuild() {
+  stopRun();
+  const n = Math.max(0, Number(nIn.value) || 0);
+  const raw = Number(guessIn.value);
+  const x0 = raw > 0 ? raw : Math.max(n, 1);
+  history = heron(n, x0, Number(stepsIn.value));
+  cursor = 0;
+  draw();
+}
+
+function draw() {
+  const n = Math.max(0, Number(nIn.value) || 0);
+  const truth = Math.sqrt(n);
+  const x = history[cursor] ?? 0;
+  const other = x === 0 ? 0 : n / x;
+
+  $('est').textContent = fmt(x);
+  $('truth').textContent = fmt(truth);
+  $('err').textContent = fmt(Math.abs(x - truth), 4);
+  $('stepsOut').textContent = stepsIn.value;
+  $('step').disabled = cursor >= history.length - 1;
+
+  $('rows').innerHTML = history.map((v, k) => `
+    <tr class="${k === cursor ? 'current' : ''}">
+      <td>${k}</td><td>${fmt(v, 12)}</td><td>${v === 0 ? '—' : fmt(n / v, 12)}</td>
+      <td>${fmt(Math.abs(v - truth), 3)}</td>
+    </tr>`).join('');
+
+  paint(x, other, truth);
+}
+
+function paint(x, other, truth) {
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+
+  const pad = 46;
+  const span = Math.max(x, other, truth, 1e-9) * 1.12;
+  const scale = Math.min(w - pad * 2, h - pad * 2) / span;
+  const originX = pad, originY = h - pad;
+
+  ctx.strokeStyle = css('--border');
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(originX, pad * 0.4);
+  ctx.lineTo(originX, originY);
+  ctx.lineTo(w - pad * 0.4, originY);
+  ctx.stroke();
+
+  // target square: √n by √n
+  const t = truth * scale;
+  ctx.setLineDash([5, 5]);
+  ctx.strokeStyle = css('--muted');
+  ctx.strokeRect(originX, originY - t, t, t);
+  ctx.setLineDash([]);
+
+  // current rectangle: x by n/x, area n
+  const rw = Math.min(x * scale, w - pad * 1.2);
+  const rh = Math.min(other * scale, h - pad * 1.2);
+  ctx.fillStyle = css('--accent-soft') || 'rgba(124,196,255,0.14)';
+  ctx.fillRect(originX, originY - rh, rw, rh);
+  ctx.strokeStyle = css('--accent');
+  ctx.lineWidth = 2;
+  ctx.strokeRect(originX, originY - rh, rw, rh);
+
+  ctx.fillStyle = css('--muted');
+  ctx.font = '12px ui-monospace, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(`x = ${fmt(x, 6)}`, originX + rw / 2, originY + 20);
+  ctx.save();
+  ctx.translate(originX - 14, originY - rh / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText(`n/x = ${fmt(other, 6)}`, 0, 0);
+  ctx.restore();
+  ctx.textAlign = 'left';
+  ctx.fillText(`√n = ${fmt(truth, 8)}`, originX + t + 8, originY - t + 4);
+}
+
+function stopRun() { clearInterval(timer); timer = null; }
+
+$('step').addEventListener('click', () => {
+  if (cursor < history.length - 1) { cursor++; draw(); }
+});
+$('run').addEventListener('click', () => {
+  stopRun();
+  cursor = 0;
+  draw();
+  timer = setInterval(() => {
+    if (cursor >= history.length - 1) return stopRun();
+    cursor++;
+    draw();
+  }, 650);
+});
+$('reset').addEventListener('click', rebuild);
+for (const el of [nIn, guessIn, stepsIn]) el.addEventListener('input', rebuild);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+
+rebuild();
+</script>
+</body>
+</html>

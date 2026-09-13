@@ -1,0 +1,21 @@
+{
+  "generated": "2026-09-13T06:51:37.380Z",
+  "count": 1,
+  "projects": [
+    {
+      "slug": "squareRoot",
+      "title": "Square Root",
+      "description": "Interactive visualiser for Heron's method for √n: step through the iterations and watch them converge.",
+      "tags": [
+        "javascript",
+        "algorithms",
+        "canvas"
+      ],
+      "status": "done",
+      "accent": "#7cc4ff",
+      "demo": "squareRoot/",
+      "source": "squareRoot/",
+      "updated": "2026-09-13"
+    }
+  ]
+}
