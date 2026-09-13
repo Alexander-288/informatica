@@ -1,6 +1,6 @@
 {
-  "generated": "2026-09-13T07:38:47.141Z",
-  "files": 19,
+  "generated": "2026-09-13T07:38:55.806Z",
+  "files": 18,
   "dirs": 5,
   "tree": {
     "name": ".",
@@ -100,11 +100,6 @@
       {
         "name": "404.html",
         "path": "404.html",
-        "type": "file"
-      },
-      {
-        "name": "CLAUDE.md",
-        "path": "CLAUDE.md",
         "type": "file"
       },
       {
