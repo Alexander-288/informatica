@@ -65,9 +65,21 @@
 }
 .ruch .reveal.widoczny { opacity: 1; transform: none; }
 
+/* Zapytanie medialne nie podnosi specyficznosci, wiec selektory musza tu byc
+   co najmniej tak szczegolowe jak te wyzej - inaczej .ruch .reveal wygralby
+   z samym .reveal i tresc zostalaby przezroczysta. */
 @media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1; transform: none; transition: none; }
-  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  .ruch .reveal,
+  .ruch .drabina-wiersz {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    transition-delay: 0s !important;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* ============================================================

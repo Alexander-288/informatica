@@ -30,9 +30,24 @@ export function wlaczUjawnianie(selektor = '.reveal') {
         obserwator.unobserve(wpis.target);   // ujawniamy raz, nie tam i z powrotem
       }
     }
-  }, { rootMargin: '0px 0px -12% 0px', threshold: 0.15 });
+    // Prog zerowy, a nie ulamek powierzchni. Sekcja historii na waskim
+    // ekranie jest kilka razy wyzsza od okna, wiec zaden sensowny ulamek
+    // jej powierzchni nigdy nie bylby widoczny naraz i sekcja zostalaby
+    // przezroczysta. Wejscie w widok wystarczy, ujemny margines u dolu
+    // opoznia to o kawalek ekranu.
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0 });
 
   elementy.forEach((el) => obserwator.observe(el));
+
+  // Bezpiecznik. IntersectionObserver zalezy od tego, ze przegladarka
+  // faktycznie rysuje strone - w karcie w tle albo w oknie, ktore nigdy sie
+  // nie wyswietlilo, potrafi nie odpalic ani razu. Gdyby po dwoch sekundach
+  // nic sie nie ujawnilo, wylaczamy animacje i pokazujemy tresc. Lepiej
+  // stracic efekt niz pokazac czytelnikowi pusta strone.
+  setTimeout(() => {
+    const cokolwiek = [...elementy].some((el) => el.classList.contains('widoczny'));
+    if (!cokolwiek) document.documentElement.classList.remove('ruch');
+  }, 2000);
 }
 
 /**

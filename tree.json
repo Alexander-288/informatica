@@ -1,7 +1,7 @@
 {
-  "generated": "2026-09-13T07:52:03.716Z",
-  "files": 19,
-  "dirs": 5,
+  "generated": "2026-09-13T08:51:35.978Z",
+  "files": 47,
+  "dirs": 18,
   "tree": {
     "name": ".",
     "path": "",
@@ -44,6 +44,44 @@
         ]
       },
       {
+        "name": "docs",
+        "path": "docs",
+        "type": "dir",
+        "children": [
+          {
+            "name": "superpowers",
+            "path": "docs/superpowers",
+            "type": "dir",
+            "children": [
+              {
+                "name": "plans",
+                "path": "docs/superpowers/plans",
+                "type": "dir",
+                "children": [
+                  {
+                    "name": "2026-09-13-pierwiastek-kwadratowy.md",
+                    "path": "docs/superpowers/plans/2026-09-13-pierwiastek-kwadratowy.md",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "specs",
+                "path": "docs/superpowers/specs",
+                "type": "dir",
+                "children": [
+                  {
+                    "name": "2026-09-13-pierwiastek-kwadratowy-design.md",
+                    "path": "docs/superpowers/specs/2026-09-13-pierwiastek-kwadratowy-design.md",
+                    "type": "file"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
         "name": "scripts",
         "path": "scripts",
         "type": "dir",
@@ -66,6 +104,194 @@
         "type": "dir",
         "children": [
           {
+            "name": "assets",
+            "path": "squareRoot/assets",
+            "type": "dir",
+            "children": [
+              {
+                "name": "heron.js",
+                "path": "squareRoot/assets/heron.js",
+                "type": "file"
+              },
+              {
+                "name": "kod.js",
+                "path": "squareRoot/assets/kod.js",
+                "type": "file"
+              },
+              {
+                "name": "projekt.css",
+                "path": "squareRoot/assets/projekt.css",
+                "type": "file"
+              },
+              {
+                "name": "scrolly.js",
+                "path": "squareRoot/assets/scrolly.js",
+                "type": "file"
+              },
+              {
+                "name": "wykresy.js",
+                "path": "squareRoot/assets/wykresy.js",
+                "type": "file"
+              }
+            ]
+          },
+          {
+            "name": "program",
+            "path": "squareRoot/program",
+            "type": "dir",
+            "children": [
+              {
+                "name": "cpp",
+                "path": "squareRoot/program/cpp",
+                "type": "dir",
+                "children": [
+                  {
+                    "name": "benchmark.cpp",
+                    "path": "squareRoot/program/cpp/benchmark.cpp",
+                    "type": "file"
+                  },
+                  {
+                    "name": "build.bat",
+                    "path": "squareRoot/program/cpp/build.bat",
+                    "type": "file"
+                  },
+                  {
+                    "name": "build.sh",
+                    "path": "squareRoot/program/cpp/build.sh",
+                    "type": "file"
+                  },
+                  {
+                    "name": "sqrt_metody.hpp",
+                    "path": "squareRoot/program/cpp/sqrt_metody.hpp",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "excel",
+                "path": "squareRoot/program/excel",
+                "type": "dir",
+                "children": [
+                  {
+                    "name": "generuj_arkusz.py",
+                    "path": "squareRoot/program/excel/generuj_arkusz.py",
+                    "type": "file"
+                  },
+                  {
+                    "name": "metoda-babilonska.xlsx",
+                    "path": "squareRoot/program/excel/metoda-babilonska.xlsx",
+                    "type": "file"
+                  }
+                ]
+              },
+              {
+                "name": "python",
+                "path": "squareRoot/program/python",
+                "type": "dir",
+                "children": [
+                  {
+                    "name": "__pycache__",
+                    "path": "squareRoot/program/python/__pycache__",
+                    "type": "dir",
+                    "children": [
+                      {
+                        "name": "sqrt_metody.cpython-311.pyc",
+                        "path": "squareRoot/program/python/__pycache__/sqrt_metody.cpython-311.pyc",
+                        "type": "file"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "testy",
+                    "path": "squareRoot/program/python/testy",
+                    "type": "dir",
+                    "children": [
+                      {
+                        "name": "__pycache__",
+                        "path": "squareRoot/program/python/testy/__pycache__",
+                        "type": "dir",
+                        "children": [
+                          {
+                            "name": "test_sqrt_metody.cpython-311-pytest-9.1.1.pyc",
+                            "path": "squareRoot/program/python/testy/__pycache__/test_sqrt_metody.cpython-311-pytest-9.1.1.pyc",
+                            "type": "file"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "test_sqrt_metody.py",
+                        "path": "squareRoot/program/python/testy/test_sqrt_metody.py",
+                        "type": "file"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "analiza.py",
+                    "path": "squareRoot/program/python/analiza.py",
+                    "type": "file"
+                  },
+                  {
+                    "name": "benchmark.py",
+                    "path": "squareRoot/program/python/benchmark.py",
+                    "type": "file"
+                  },
+                  {
+                    "name": "eksport.py",
+                    "path": "squareRoot/program/python/eksport.py",
+                    "type": "file"
+                  },
+                  {
+                    "name": "sqrt_metody.py",
+                    "path": "squareRoot/program/python/sqrt_metody.py",
+                    "type": "file"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "wyniki",
+            "path": "squareRoot/wyniki",
+            "type": "dir",
+            "children": [
+              {
+                "name": "cpp-czasy.csv",
+                "path": "squareRoot/wyniki/cpp-czasy.csv",
+                "type": "file"
+              },
+              {
+                "name": "cpp-srodowisko.txt",
+                "path": "squareRoot/wyniki/cpp-srodowisko.txt",
+                "type": "file"
+              },
+              {
+                "name": "python-czasy.csv",
+                "path": "squareRoot/wyniki/python-czasy.csv",
+                "type": "file"
+              },
+              {
+                "name": "python-dokladnosc.csv",
+                "path": "squareRoot/wyniki/python-dokladnosc.csv",
+                "type": "file"
+              },
+              {
+                "name": "python-iteracje.csv",
+                "path": "squareRoot/wyniki/python-iteracje.csv",
+                "type": "file"
+              },
+              {
+                "name": "python-srodowisko.csv",
+                "path": "squareRoot/wyniki/python-srodowisko.csv",
+                "type": "file"
+              },
+              {
+                "name": "python-zbieznosc.csv",
+                "path": "squareRoot/wyniki/python-zbieznosc.csv",
+                "type": "file"
+              }
+            ]
+          },
+          {
             "name": "card.svg",
             "path": "squareRoot/card.svg",
             "type": "file"
@@ -76,13 +302,18 @@
             "type": "file"
           },
           {
+            "name": "pracownia.html",
+            "path": "squareRoot/pracownia.html",
+            "type": "file"
+          },
+          {
             "name": "project.json",
             "path": "squareRoot/project.json",
             "type": "file"
           },
           {
-            "name": "README.md",
-            "path": "squareRoot/README.md",
+            "name": "wyniki.json",
+            "path": "squareRoot/wyniki.json",
             "type": "file"
           }
         ]

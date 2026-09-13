@@ -1,15 +1,16 @@
 {
-  "generated": "2026-09-13T08:14:34.044Z",
+  "generated": "2026-09-13T08:51:35.689Z",
   "count": 1,
   "projects": [
     {
       "slug": "squareRoot",
-      "title": "Square Root",
-      "description": "Interactive visualiser for Heron's method for √n: step through the iterations and watch them converge.",
+      "title": "Pierwiastek kwadratowy",
+      "description": "Metoda babilońska od tabliczki YBC 7289 po pomiar: milion pierwiastków liczonych trzema sposobami w Pythonie i C++, z analizą dokładności co do ostatniego bitu.",
       "tags": [
-        "javascript",
-        "algorithms",
-        "canvas"
+        "python",
+        "c++",
+        "algorytmy",
+        "eksperyment"
       ],
       "status": "done",
       "accent": "#9C90FC",
