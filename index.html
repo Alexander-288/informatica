@@ -3,125 +3,247 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>informatica — project gallery</title>
-<meta name="description" content="A gallery of informatics coursework and experiments by Alexander-288.">
+<title>informatica — Alexander-288</title>
+<meta name="description" content="Entry page for the informatica project gallery by Alexander-288.">
 <link rel="stylesheet" href="assets/site.css">
+<script src="assets/theme.js"></script>
 <style>
-  .head { display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-end; justify-content: space-between; }
-  .count { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
-
-  .filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 2.5rem 0 1.25rem; }
-  .filters button {
-    font: inherit; font-family: var(--mono); font-size: 0.75rem;
-    padding: 0.35rem 0.8rem; border-radius: 999px; cursor: pointer;
-    background: transparent; color: var(--muted);
-    border: 1px solid var(--border); transition: 120ms ease;
+  body {
+    background-image: none;
+    min-height: 100dvh;
   }
-  .filters button:hover { color: var(--text); }
-  .filters button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
 
-  .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
-
-  .card {
-    position: relative; display: flex; flex-direction: column; gap: 0.7rem;
-    padding: 1.25rem; text-decoration: none; color: inherit;
-    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-    transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    min-height: 100dvh;
   }
-  .card::before {
-    content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
-    border-radius: var(--radius) 0 0 var(--radius);
-    background: var(--card-accent, var(--accent)); opacity: 0.75;
+
+  /* ---- left: the words ---- */
+  .intro {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.4rem;
+    padding: clamp(2rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4.5rem);
   }
-  .card:hover { transform: translateY(-2px); border-color: var(--card-accent, var(--accent)); box-shadow: 0 10px 30px -18px rgba(0,0,0,0.6); }
 
-  .card h2 { margin: 0; font-size: 1.15rem; letter-spacing: -0.01em; }
-  .card p { margin: 0; font-size: 0.9rem; line-height: 1.55; color: var(--muted); }
-  .card .meta { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: auto; padding-top: 0.5rem; align-items: center; }
-  .slug { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+  .mark { display: block; width: 34px; height: 25px; color: var(--text); }
+  .mark .a { fill: var(--accent); }
 
-  .status { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; }
-  .status.done { color: var(--ok); }
-  .status.wip { color: var(--warn); }
-  .status.idea { color: var(--muted); }
+  .intro .eyebrow { margin: 0; }
 
-  .empty { padding: 3rem 1rem; text-align: center; color: var(--muted); font-family: var(--mono); font-size: 0.85rem; }
+  .intro h1 {
+    font-family: var(--mono);
+    font-size: clamp(2.1rem, 5.2vw, 3.3rem);
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+  }
+  .intro h1 .dot { color: var(--accent); }
+
+  .intro p {
+    margin: 0;
+    max-width: 46ch;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+  .intro p strong { color: var(--text); font-weight: 600; }
+
+  .rule {
+    width: 100%;
+    max-width: 46ch;
+    height: 4px;
+    background-image: linear-gradient(90deg, var(--text) 4px, transparent 4px);
+    background-size: 8px 4px;
+    opacity: 0.35;
+  }
+
+  /* ---- the continue button ---- */
+  .continue {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.85rem 1.4rem;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--bg);
+    background: var(--text);
+    border: 2px solid var(--text);
+    border-radius: 0;
+    box-shadow: 6px 6px 0 0 var(--accent);
+    transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease, border-color 120ms ease;
+  }
+  .continue:hover {
+    background: var(--text-2);
+    border-color: var(--text-2);
+    box-shadow: 8px 8px 0 0 var(--accent);
+  }
+  .continue:hover .arrow { transform: translateX(3px); }
+  .continue:active { transform: translate(3px, 3px); box-shadow: 3px 3px 0 0 var(--accent); }
+  .continue:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .continue .arrow { font-size: 1rem; line-height: 1; transition: transform 120ms ease; }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.4rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .meta a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--border); }
+  .meta a:hover { color: var(--accent-ink); }
+
+  /* ---- right: the dithered art ---- */
+  .art { position: relative; overflow: hidden; background: var(--bg); }
+  .art canvas { display: block; width: 100%; height: 100%; }
+
+  @media (max-width: 780px) {
+    .split { grid-template-columns: 1fr; grid-template-rows: 32vh auto; }
+    .intro { padding: 2.5rem 1.5rem 3.5rem; }
+    .art { order: -1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .continue, .continue .arrow, .theme-toggle, .theme-toggle .knob { transition: none; }
+    .continue:hover .arrow { transform: none; }
+  }
 </style>
 </head>
 <body>
-<main class="wrap">
-  <header class="head">
-    <div>
-      <p class="eyebrow">Alexander-288 · informatica</p>
-      <h1>Project gallery</h1>
-      <p class="lede">Everything I build for informatics lives in one repository. Each folder is a self-contained project, and this page is the index. Pick one to open the live demo.</p>
-    </div>
-    <p class="count" id="count"></p>
-  </header>
+<button class="theme-toggle" type="button" aria-pressed="false" aria-label="Toggle theme">
+  <span class="track"><span class="knob"></span></span>
+  <span class="label">light</span>
+</button>
 
-  <div class="filters" id="filters"></div>
-  <div class="grid" id="grid"></div>
-  <p class="empty" id="empty" hidden>No projects match that filter.</p>
+<div class="split">
+  <section class="intro">
+    <!-- 4x3 pixel mark: 7px cells on a 9px pitch -->
+    <svg class="mark" viewBox="0 0 34 25" width="34" height="25" fill="currentColor"
+         shape-rendering="crispEdges" role="img" aria-label="informatica">
+      <rect x="0" y="0" width="7" height="7"/>
+      <rect x="9" y="0" width="7" height="7"/>
+      <rect x="27" y="0" width="7" height="7" class="a"/>
+      <rect x="0" y="9" width="7" height="7"/>
+      <rect x="18" y="9" width="7" height="7"/>
+      <rect x="27" y="9" width="7" height="7"/>
+      <rect x="0" y="18" width="7" height="7" class="a"/>
+      <rect x="9" y="18" width="7" height="7"/>
+      <rect x="18" y="18" width="7" height="7"/>
+    </svg>
 
-  <footer class="site">
-    <span id="generated"></span>
-    <a href="https://github.com/Alexander-288/informatica">github.com/Alexander-288/informatica</a>
-  </footer>
-</main>
+    <p class="eyebrow">Alexander-288 · informatica</p>
+    <h1>Project gallery<span class="dot">.</span></h1>
+
+    <p>
+      Everything I build for informatics lives in <strong>one repository</strong>.
+      Each folder is a self-contained project with its own page, and the gallery is
+      the index of all of them — algorithms, visualisations and small experiments,
+      every one of them runnable straight in the browser.
+    </p>
+
+    <div class="rule" aria-hidden="true"></div>
+
+    <a class="continue" href="gallery.html">
+      Continue <span class="arrow" aria-hidden="true">&#9656;</span>
+    </a>
+
+    <p class="meta">
+      <span id="count">loading index&hellip;</span>
+      <a href="https://github.com/Alexander-288/informatica">source on github</a>
+    </p>
+  </section>
+
+  <aside class="art">
+    <canvas id="dither"></canvas>
+  </aside>
+</div>
 
 <script type="module">
-const grid = document.getElementById('grid');
-const filters = document.getElementById('filters');
-const empty = document.getElementById('empty');
+// ---- dithered halftone field, drawn as diamonds on a fixed grid ----
+const canvas = document.getElementById('dither');
+const ctx = canvas.getContext('2d');
+const CELL = 9;
 
-let projects = [];
-let active = 'all';
+// deterministic per-cell noise, so the picture is identical on every redraw
+const hash = (x, y) => {
+  const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+  return n - Math.floor(n);
+};
 
-const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-
-function render() {
-  const shown = active === 'all' ? projects : projects.filter((p) => (p.tags ?? []).includes(active));
-  empty.hidden = shown.length > 0;
-  grid.innerHTML = shown.map((p) => `
-    <a class="card" href="${esc(p.demo ?? p.source ?? '#')}" style="--card-accent:${esc(p.accent ?? 'var(--accent)')}">
-      <h2>${esc(p.title)}</h2>
-      <p>${esc(p.description)}</p>
-      <div class="meta">
-        <span class="status ${esc(p.status)}">${esc(p.status)}</span>
-        <span class="slug">${esc(p.slug)}/</span>
-        ${(p.tags ?? []).map((t) => `<span class="tag">${esc(t)}</span>`).join('')}
-      </div>
-    </a>`).join('');
+// 0 (empty) .. 1 (solid): an organic edge sweeping in from the right,
+// with a soft hole punched out of the dense side.
+function field(nx, ny) {
+  const edge =
+    nx - 0.02
+    - 0.20 * Math.sin(ny * 3.1 + 0.6)
+    - 0.09 * Math.sin(ny * 7.3 + 2.0)
+    - 0.05 * Math.sin(ny * 13.0 + 1.1);
+  const hole = 0.95 * Math.exp(-(((nx - 0.72) ** 2) * 14 + ((ny - 0.5) ** 2) * 5));
+  return Math.max(0, Math.min(1, edge * 2.5)) - hole;
 }
 
-function renderFilters() {
-  const tags = [...new Set(projects.flatMap((p) => p.tags ?? []))].sort();
-  filters.innerHTML = ['all', ...tags]
-    .map((t) => `<button type="button" data-tag="${esc(t)}" aria-pressed="${t === active}">${esc(t)}</button>`)
-    .join('');
+function draw() {
+  const rect = canvas.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.max(1, Math.round(rect.width));
+  const h = Math.max(1, Math.round(rect.height));
+
+  canvas.width = Math.round(w * dpr);
+  canvas.height = Math.round(h * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+
+  const styles = getComputedStyle(document.documentElement);
+  const ink = styles.getPropertyValue('--text').trim() || '#222526';
+  const accent = styles.getPropertyValue('--accent').trim() || '#9C90FC';
+
+  const cols = Math.ceil(w / CELL);
+  const rows = Math.ceil(h / CELL);
+
+  for (let j = 0; j < rows; j++) {
+    for (let i = 0; i < cols; i++) {
+      const cx = i * CELL + CELL / 2;
+      const cy = j * CELL + CELL / 2;
+      const n = hash(i, j);
+
+      // scatter the fringe: a cell only lights up once it clears its own threshold
+      const v = field(cx / w, cy / h) - n * 0.42;
+      if (v <= 0.02) continue;
+
+      const size = Math.min(1, v) * CELL * 1.02;
+      if (size < 0.7) continue;
+
+      // a few cells out in the sparse fringe pick up the accent colour
+      ctx.fillStyle = n > 0.985 && v < 0.55 ? accent : ink;
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(Math.PI / 4);
+      ctx.fillRect(-size / 2, -size / 2, size, size);
+      ctx.restore();
+    }
+  }
 }
 
-filters.addEventListener('click', (e) => {
-  const btn = e.target.closest('button');
-  if (!btn) return;
-  active = btn.dataset.tag;
-  renderFilters();
-  render();
-});
+const redraw = () => requestAnimationFrame(draw);
+new ResizeObserver(redraw).observe(canvas);
+document.addEventListener('themechange', redraw);
+draw();
 
+// ---- project count, straight from the generated index ----
 try {
   const data = await fetch('projects.json', { cache: 'no-cache' }).then((r) => r.json());
-  projects = data.projects ?? [];
-  document.getElementById('count').textContent = `${data.count ?? projects.length} project${projects.length === 1 ? '' : 's'}`;
-  if (data.generated) {
-    document.getElementById('generated').textContent = `index generated ${new Date(data.generated).toISOString().slice(0, 10)}`;
-  }
-  renderFilters();
-  render();
-} catch (err) {
-  grid.innerHTML = '';
-  empty.hidden = false;
-  empty.textContent = 'Could not load projects.json. Open this page over http, not file://';
+  const n = data.count ?? (data.projects ?? []).length;
+  document.getElementById('count').textContent = `${n} project${n === 1 ? '' : 's'} inside`;
+} catch {
+  document.getElementById('count').textContent = 'open over http, not file://';
 }
 </script>
 </body>

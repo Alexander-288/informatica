@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>informatica — project gallery</title>
+<meta name="description" content="A gallery of informatics coursework and experiments by Alexander-288.">
+<link rel="stylesheet" href="assets/site.css">
+<script src="assets/theme.js"></script>
+<style>
+  .head { display: flex; flex-wrap: wrap; gap: 2rem; align-items: flex-end; justify-content: space-between; }
+  .count { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+
+  .filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 2.5rem 0 1.25rem; }
+  .filters button {
+    font: inherit; font-family: var(--mono); font-size: 0.75rem;
+    padding: 0.35rem 0.8rem; border-radius: 999px; cursor: pointer;
+    background: transparent; color: var(--muted);
+    border: 1px solid var(--border); transition: 120ms ease;
+  }
+  .filters button:hover { color: var(--text); }
+  .filters button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+
+  .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+
+  .card {
+    position: relative; display: flex; flex-direction: column; gap: 0.7rem;
+    padding: 1.25rem; text-decoration: none; color: inherit;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+  }
+  .card::before {
+    content: ""; position: absolute; inset: 0 auto 0 0; width: 3px;
+    border-radius: var(--radius) 0 0 var(--radius);
+    background: var(--card-accent, var(--accent)); opacity: 0.75;
+  }
+  .card:hover { transform: translateY(-2px); border-color: var(--card-accent, var(--accent)); box-shadow: 0 10px 30px -18px rgba(0,0,0,0.6); }
+
+  .card h2 { margin: 0; font-size: 1.15rem; letter-spacing: -0.01em; }
+  .card p { margin: 0; font-size: 0.9rem; line-height: 1.55; color: var(--muted); }
+  .card .meta { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: auto; padding-top: 0.5rem; align-items: center; }
+  .slug { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+
+  .status { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .status.done { color: var(--ok); }
+  .status.wip { color: var(--warn); }
+  .status.idea { color: var(--muted); }
+
+  .empty { padding: 3rem 1rem; text-align: center; color: var(--muted); font-family: var(--mono); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" type="button" aria-pressed="false" aria-label="Toggle theme">
+  <span class="track"><span class="knob"></span></span>
+  <span class="label">light</span>
+</button>
+<main class="wrap">
+  <header class="head">
+    <div>
+      <p class="eyebrow">Alexander-288 · informatica</p>
+      <h1>Project gallery</h1>
+      <p class="lede">Everything I build for informatics lives in one repository. Each folder is a self-contained project, and this page is the index. Pick one to open the live demo.</p>
+    </div>
+    <p class="count" id="count"></p>
+  </header>
+
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="grid"></div>
+  <p class="empty" id="empty" hidden>No projects match that filter.</p>
+
+  <footer class="site">
+    <span id="generated"></span>
+    <a href="https://github.com/Alexander-288/informatica">github.com/Alexander-288/informatica</a>
+  </footer>
+</main>
+
+<script type="module">
+const grid = document.getElementById('grid');
+const filters = document.getElementById('filters');
+const empty = document.getElementById('empty');
+
+let projects = [];
+let active = 'all';
+
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function render() {
+  const shown = active === 'all' ? projects : projects.filter((p) => (p.tags ?? []).includes(active));
+  empty.hidden = shown.length > 0;
+  grid.innerHTML = shown.map((p) => `
+    <a class="card" href="${esc(p.demo ?? p.source ?? '#')}" style="--card-accent:${esc(p.accent ?? 'var(--accent)')}">
+      <h2>${esc(p.title)}</h2>
+      <p>${esc(p.description)}</p>
+      <div class="meta">
+        <span class="status ${esc(p.status)}">${esc(p.status)}</span>
+        <span class="slug">${esc(p.slug)}/</span>
+        ${(p.tags ?? []).map((t) => `<span class="tag">${esc(t)}</span>`).join('')}
+      </div>
+    </a>`).join('');
+}
+
+function renderFilters() {
+  const tags = [...new Set(projects.flatMap((p) => p.tags ?? []))].sort();
+  filters.innerHTML = ['all', ...tags]
+    .map((t) => `<button type="button" data-tag="${esc(t)}" aria-pressed="${t === active}">${esc(t)}</button>`)
+    .join('');
+}
+
+filters.addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  active = btn.dataset.tag;
+  renderFilters();
+  render();
+});
+
+try {
+  const data = await fetch('projects.json', { cache: 'no-cache' }).then((r) => r.json());
+  projects = data.projects ?? [];
+  document.getElementById('count').textContent = `${data.count ?? projects.length} project${projects.length === 1 ? '' : 's'}`;
+  if (data.generated) {
+    document.getElementById('generated').textContent = `index generated ${new Date(data.generated).toISOString().slice(0, 10)}`;
+  }
+  renderFilters();
+  render();
+} catch (err) {
+  grid.innerHTML = '';
+  empty.hidden = false;
+  empty.textContent = 'Could not load projects.json. Open this page over http, not file://';
+}
+</script>
+</body>
+</html>

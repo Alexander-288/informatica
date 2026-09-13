@@ -8,9 +8,11 @@ One repository for every informatics project, with a GitHub Pages gallery in fro
 
 ```
 .
-├── index.html              gallery page (reads projects.json)
+├── index.html              entry page (text + Continue into the gallery)
+├── gallery.html            gallery page (reads projects.json)
 ├── projects.json           generated index, committed to the repo
-├── assets/site.css         shared styling for the gallery and project pages
+├── assets/site.css         shared styling for every page
+├── assets/theme.js         shared light/dark toggle
 ├── scripts/build-gallery.mjs   scanner that regenerates projects.json
 └── squareRoot/             project 01
     ├── index.html          the live demo
@@ -20,7 +22,7 @@ One repository for every informatics project, with a GitHub Pages gallery in fro
 ## Adding a project
 
 1. Create a folder, e.g. `binarySearch/`.
-2. Put an `index.html` in it if it has a live demo. It can use `../assets/site.css` for the shared look.
+2. Put an `index.html` in it if it has a live demo. It can use `../assets/site.css` and `../assets/theme.js` for the shared look and the theme toggle.
 3. Add a `project.json`:
 
 ```json

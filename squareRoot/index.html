@@ -6,6 +6,7 @@
 <title>Square Root — Heron's method</title>
 <meta name="description" content="Interactive visualiser for Heron's (Babylonian) method of computing square roots.">
 <link rel="stylesheet" href="../assets/site.css">
+<script src="../assets/theme.js"></script>
 <style>
   .layout { display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); margin-top: 2.5rem; }
   @media (min-width: 860px) { .layout { grid-template-columns: 320px minmax(0, 1fr); align-items: start; } }
@@ -54,8 +55,12 @@
 </style>
 </head>
 <body>
+<button class="theme-toggle" type="button" aria-pressed="false" aria-label="Toggle theme">
+  <span class="track"><span class="knob"></span></span>
+  <span class="label">light</span>
+</button>
 <main class="wrap">
-  <a class="back" href="../">← gallery</a>
+  <a class="back" href="../gallery.html">← gallery</a>
 
   <p class="eyebrow">Project 01 · algorithms</p>
   <h1>Square root, by hand</h1>
