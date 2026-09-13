@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pracownia — pierwiastek kwadratowy</title>
+<meta name="description" content="Teoria metody babilońskiej, implementacje w pseudokodzie, Pythonie, C++ i arkuszu kalkulacyjnym, oraz zmierzony eksperyment porównujący ją z funkcją sqrt().">
+<link rel="icon" href="../assets/favicon.ico" sizes="16x16 32x32 48x48 64x64">
+<link rel="stylesheet" href="../assets/site.css">
+<link rel="stylesheet" href="assets/projekt.css">
+<script src="../assets/theme.js"></script>
+</head>
+<body>
+<button class="theme-toggle" type="button" aria-pressed="false" aria-label="Przełącz motyw">
+  <span class="track"><span class="knob"></span></span>
+  <span class="label">jasny</span>
+</button>
+
+<main class="wrap">
+  <a class="back" href="index.html">← opowieść</a>
+
+  <p class="eyebrow">Projekt 01 · pracownia</p>
+  <h1>Metoda babilońska,<br>rozłożona na części</h1>
+  <p class="lede">
+    Wzór i dowód jego zbieżności, cztery implementacje tego samego algorytmu
+    oraz eksperyment, w którym milion pierwiastków liczony jest na trzy sposoby
+    i mierzony stoperem.
+  </p>
+
+  <div class="pracownia-uklad">
+    <nav class="szyna" aria-label="Sekcje pracowni">
+      <ol>
+        <li><a href="#podstawy">Podstawy</a></li>
+        <li><a href="#babilonska">Metoda babilońska</a></li>
+        <li><a href="#inne">Inne metody</a></li>
+        <li><a href="#implementacje">Implementacje</a></li>
+        <li><a href="#eksperyment">Eksperyment</a></li>
+        <li><a href="#wyniki">Wyniki</a></li>
+        <li><a href="#wnioski">Wnioski</a></li>
+      </ol>
+    </nav>
+
+    <div>
+
+    <!-- ================= 1. PODSTAWY ================= -->
+    <section class="sekcja" id="podstawy">
+      <h2>Podstawy matematyczne</h2>
+
+      <p>
+        Pierwiastek kwadratowy z liczby <em>n</em> ≥ 0 to taka nieujemna liczba
+        <em>x</em>, że <em>x²</em> = <em>n</em>. Geometrycznie: bok kwadratu,
+        którego pole wynosi <em>n</em>.
+      </p>
+
+      <h3>Dlaczego to nie jest jedno działanie</h3>
+      <p>
+        Dla większości liczb √<em>n</em> jest liczbą niewymierną, czyli ma
+        nieskończone i nieokresowe rozwinięcie dziesiętne. Komputer dysponuje
+        skończoną liczbą bitów, więc i tak zapisze tylko przybliżenie.
+        Pytanie brzmi nie „jak policzyć dokładnie”, lecz <strong>jak szybko
+        dojść do przybliżenia tak dobrego, że lepszego typ danych już nie
+        pomieści</strong>.
+      </p>
+
+      <h3>Pomysł: uśrednianie</h3>
+      <p>
+        Weźmy dowolną dodatnią liczbę <em>x</em> i podzielmy przez nią
+        <em>n</em>. Jeśli <em>x</em> było za małe, to <em>n/x</em> jest za duże,
+        i odwrotnie. Prawdziwy pierwiastek zawsze leży <strong>pomiędzy</strong>
+        tymi dwiema liczbami. Naturalnym następnym strzałem jest więc ich
+        średnia.
+      </p>
+
+      <div class="wzor">
+        x<sub>k+1</sub> = ½ · ( x<sub>k</sub> + n / x<sub>k</sub> )
+        <em>jeden krok metody babilońskiej</em>
+      </div>
+
+      <h3>Zbieżność kwadratowa</h3>
+      <p>
+        Oznaczmy błąd względny po <em>k</em> krokach jako
+        <em>e<sub>k</sub></em> = <em>x<sub>k</sub></em>/√<em>n</em> − 1.
+        Podstawiając do wzoru i upraszczając, otrzymujemy zależność między
+        kolejnymi błędami:
+      </p>
+
+      <div class="wzor">
+        e<sub>k+1</sub> = e<sub>k</sub>² / ( 2 · (1 + e<sub>k</sub>) )
+        <em>błąd jest podnoszony do kwadratu w każdym kroku</em>
+      </div>
+
+      <p>
+        To jest cała siła tej metody. Jeżeli błąd wynosi 10⁻³, to po jednym
+        kroku będzie rzędu 10⁻⁶, po następnym 10⁻¹², a po trzecim przekroczy
+        precyzję typu <code>double</code>. Mówiąc prościej:
+        <strong>liczba poprawnych cyfr podwaja się w każdej iteracji</strong>.
+      </p>
+
+      <p>
+        Wzór pokazuje też, że po pierwszym kroku błąd jest zawsze dodatni
+        (kwadrat w liczniku), czyli przybliżenia schodzą do √<em>n</em>
+        <strong>z góry</strong> i nigdy nie zejdą poniżej. Metoda jest zbieżna
+        dla każdego dodatniego punktu startowego.
+      </p>
+
+      <h3>Kryterium zatrzymania</h3>
+      <p>
+        Zatrzymujemy się, gdy kolejne przybliżenia przestają się różnić
+        w granicach zadanej dokładności 10⁻¹⁵. Porównanie musi być
+        <strong>względne</strong>, nie bezwzględne:
+      </p>
+
+      <div class="wzor">
+        | x<sub>k+1</sub> − x<sub>k</sub> | ≤ ε · x<sub>k+1</sub>,
+        &nbsp;&nbsp; ε = 10⁻¹⁵
+      </div>
+
+      <div class="uwaga">
+        <p>
+          Gdyby użyć kryterium bezwzględnego <code>|x(k+1) − x(k)| ≤ 1e-15</code>,
+          program zawiesiłby się dla dużych <em>n</em>. Dla <em>n</em> = 10⁶
+          pierwiastek wynosi 1000, a najmniejsza różnica między sąsiednimi
+          liczbami <code>double</code> w okolicach 1000 to około 10⁻¹³, czyli
+          sto razy więcej niż próg. Warunek nigdy nie zostałby spełniony
+          i pętla kręciłaby się do wyczerpania limitu iteracji.
+        </p>
+      </div>
+    </section>
+
+    <!-- ================= 2. METODA BABILOŃSKA ================= -->
+    <section class="sekcja" id="babilonska">
+      <h2>Metoda babilońska</h2>
+
+      <p>
+        Prostokąt o bokach <em>x</em> oraz <em>n/x</em> ma pole równe <em>n</em>, zawsze, niezależnie od tego, jak zły jest nasz
+        <em>x</em>. Zmienia się tylko to, jak bardzo jest wydłużony.
+        Krok metody zastępuje oba boki ich średnią, więc prostokąt staje się
+        bardziej kwadratowy, zachowując pole. Granicą jest kwadrat o boku
+        √<em>n</em>.
+      </p>
+
+      <p>
+        Poniższy wizualizator pokazuje to wprost. Ustaw <em>n</em>, wybierz
+        punkt startowy i klikaj „Krok”: fioletowy prostokąt dogania kwadrat
+        narysowany linią przerywaną.
+      </p>
+
+      <div class="wizualizator" id="wizualizator">
+        <div class="sterowanie">
+          <div class="pole">
+            <label for="pole-n">n (liczba podpierwiastkowa)</label>
+            <input id="pole-n" data-rola="n" type="number" value="2" min="0" step="any">
+          </div>
+          <div class="pole">
+            <label for="pole-start">punkt startowy</label>
+            <select id="pole-start" data-rola="start">
+              <option value="naive">naiwny: x₀ = n</option>
+              <option value="fast" selected>szybki: z wykładnika</option>
+            </select>
+          </div>
+
+          <div class="przyciski">
+            <button type="button" class="glowny" data-rola="krok">Krok ▸</button>
+            <button type="button" data-rola="bieg">Uruchom</button>
+            <button type="button" data-rola="reset">Od nowa</button>
+          </div>
+
+          <dl class="odczyt">
+            <dt>przybliżenie</dt>
+            <dd data-rola="przyblizenie">—</dd>
+            <dt>Math.sqrt(n)</dt>
+            <dd class="drobne" data-rola="wzorzec">—</dd>
+            <dt>błąd bezwzględny</dt>
+            <dd class="drobne" data-rola="blad">—</dd>
+            <dt>krok</dt>
+            <dd class="drobne" data-rola="ile-krokow">—</dd>
+          </dl>
+        </div>
+
+        <div>
+          <canvas class="scena-rysunku" data-rola="plotno" width="720" height="380"></canvas>
+          <div class="przewijana">
+            <table class="tabela">
+              <thead>
+                <tr><th>k</th><th>x<sub>k</sub></th><th>n / x<sub>k</sub></th><th>błąd</th></tr>
+              </thead>
+              <tbody data-rola="tabela"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <h3>Punkt startowy ma znaczenie</h3>
+      <p>
+        Metoda zbiega z każdego dodatniego <em>x₀</em>, ale nie jednakowo
+        szybko. Start <em>x₀</em> = <em>n</em> jest najprostszy do napisania
+        i najgorszy w skutkach: dla <em>n</em> = 10⁶ jest oddalony od wyniku
+        o trzy rzędy wielkości, więc pierwsze kroki idą wyłącznie na zbicie
+        rzędu.
+      </p>
+      <p>
+        Lepszy start bierze się z samego zapisu liczby zmiennoprzecinkowej.
+        Każdy <code>double</code> jest przechowywany jako
+        <em>n</em> = <em>m</em> · 2<sup><em>e</em></sup>, więc
+        √<em>n</em> = √<em>m</em> · 2<sup><em>e</em>/2</sup>. Po sprowadzeniu
+        <em>e</em> do parzystej mantysa <em>m</em> leży w przedziale
+        [0,5; 2), a tam √<em>m</em> wystarczy przybliżyć linią prostą:
+      </p>
+
+      <div class="wzor">
+        √m ≈ 0,5 · m + 0,5 &nbsp;&nbsp; dla m ∈ [0,5; 2)
+        <em>maksymalny błąd względny 6,07%, osiągany dla m = 0,5</em>
+      </div>
+
+      <p>
+        Sześć procent błędu brzmi kiepsko, ale metoda podwaja liczbę poprawnych
+        cyfr w każdym kroku: 6% → 0,2% → 10⁻⁶ → 10⁻¹² → koniec precyzji.
+        Dla <em>n</em> = 10⁶ wystarczają <strong>trzy iteracje zamiast
+        piętnastu</strong>, a samo wyznaczenie startu to dwie operacje na
+        wykładniku.
+      </p>
+    </section>
+
+    <!-- ================= 3. INNE METODY ================= -->
+    <section class="sekcja" id="inne">
+      <h2>Inne metody</h2>
+
+      <p>
+        Metoda babilońska nie jest jedyna. Poniżej cztery inne podejścia,
+        uszeregowane od najwolniejszego do najbardziej wyspecjalizowanego.
+      </p>
+
+      <h3>Bisekcja (połowienie przedziału)</h3>
+      <p>
+        Wiemy, że √<em>n</em> leży gdzieś między 0 a max(1, <em>n</em>).
+        Sprawdzamy środek przedziału: jeśli jego kwadrat jest za duży, odrzucamy
+        górną połowę, w przeciwnym razie dolną. Metoda jest odporna i banalnie
+        prosta, ale <strong>zyskuje tylko jeden bit na iterację</strong>.
+        Do pełnej precyzji <code>double</code> potrzeba około 52 kroków,
+        czyli kilkanaście razy więcej niż u Herona.
+      </p>
+
+      <h3>Metoda Newtona</h3>
+      <p>
+        Ogólna metoda szukania miejsc zerowych: przybliżamy funkcję styczną
+        w punkcie i bierzemy jej miejsce zerowe jako kolejne przybliżenie.
+        Zastosowana do <em>f(x)</em> = <em>x²</em> − <em>n</em> daje
+        <em>x</em> − (<em>x²</em> − <em>n</em>)/(2<em>x</em>), co po uproszczeniu
+        jest <strong>dokładnie wzorem Herona</strong>. Metoda babilońska to
+        szczególny przypadek Newtona, odkryty trzy i pół tysiąca lat wcześniej.
+      </p>
+
+      <h3>Fast inverse square root</h3>
+      <p>
+        Sztuczka spopularyzowana przez kod źródłowy gry <em>Quake III Arena</em>
+        (1999). Liczbę zmiennoprzecinkową interpretuje się jako liczbę całkowitą,
+        odejmuje od stałej <code>0x5F3759DF</code> i wynik interpretuje z powrotem
+        jako liczbę zmiennoprzecinkową. Wychodzi przybliżenie
+        1/√<em>x</em> z błędem poniżej 4%, poprawiane potem jednym krokiem
+        Newtona.
+      </p>
+      <p>
+        Sztuczka działa, bo bity wykładnika liczby zmiennoprzecinkowej są
+        w przybliżeniu jej logarytmem. To ten sam pomysł co „szybki start”
+        opisany wyżej, tylko doprowadzony do skrajności. Dziś nie ma
+        zastosowania: procesory mają instrukcję <code>rsqrtss</code>, która
+        robi to samo szybciej i dokładniej.
+      </p>
+
+      <h3>CORDIC</h3>
+      <p>
+        Algorytm oparty wyłącznie na dodawaniu, odejmowaniu i przesunięciach
+        bitowych, bez mnożenia i dzielenia. Używany tam, gdzie nie ma jednostki
+        zmiennoprzecinkowej: w kalkulatorach naukowych, prostych
+        mikrokontrolerach i układach FPGA. Wolniejszy niż Heron, ale nie wymaga
+        dzielenia, które w takim sprzęcie bywa najdroższą operacją.
+      </p>
+
+      <div class="wykres">
+        <h3>Ile iteracji potrzeba</h3>
+        <p class="podpis" id="opis-iteracji">
+          Liczba obrotów pętli potrzebna metodzie babilońskiej, zmierzona
+          programem <code>analiza.py</code> dla rosnącego <em>n</em>.
+        </p>
+        <div id="wykres-iteracji"></div>
+      </div>
+    </section>
+
+    <!-- ================= 4. IMPLEMENTACJE ================= -->
+    <section class="sekcja" id="implementacje">
+      <h2>Implementacje</h2>
+
+      <p>
+        Ten sam algorytm w czterech postaciach. Kod Pythona i C++ jest wczytywany
+        wprost z plików źródłowych tego repozytorium, więc to, co widać niżej,
+        jest dokładnie tym, co się uruchamia w eksperymencie.
+      </p>
+
+      <h3>Pseudokod</h3>
+      <figure class="blok-kodu">
+        <figcaption>pseudokod</figcaption>
+        <pre><code data-jezyk="python">funkcja pierwiastek(n, eps):
+    jeżeli n &lt; 0:
+        błąd "pierwiastek z liczby ujemnej"
+    jeżeli n = 0:
+        zwróć 0
+
+    x ← punkt_startowy(n)
+
+    powtarzaj najwyżej 100 razy:
+        nowe_x ← 0,5 * (x + n / x)
+        jeżeli |nowe_x - x| ≤ eps * nowe_x:
+            zwróć nowe_x
+        x ← nowe_x
+
+    zwróć x
+
+
+funkcja punkt_startowy(n):
+    # wariant naiwny
+    zwróć n
+
+    # wariant szybki: n = m * 2^e, więc sqrt(n) = sqrt(m) * 2^(e/2)
+    (m, e) ← rozłóż_na_mantysę_i_wykładnik(n)
+    jeżeli e jest nieparzyste:
+        m ← m * 2
+        e ← e - 1
+    zwróć (0,5 * m + 0,5) * 2^(e/2)</code></pre>
+      </figure>
+
+      <h3>Python</h3>
+      <p>
+        Moduł zawiera wyłącznie algorytmy, bez pomiaru czasu i bez wypisywania
+        na ekran. Dzięki temu da się go testować niezależnie, a eksperyment
+        mierzy czas samych obliczeń.
+      </p>
+      <figure class="blok-kodu" data-plik="program/python/sqrt_metody.py">
+        <figcaption>program/python/sqrt_metody.py</figcaption>
+        <pre><code data-jezyk="python">Wczytywanie…</code></pre>
+      </figure>
+
+      <div class="uwaga">
+        <p>
+          Obie funkcje Herona mają osobne, powielone pętle zamiast jednej
+          wspólnej z parametrem „punkt startowy”. To celowe: przekazanie
+          funkcji jako parametru dodałoby narzut wywołania <strong>wewnątrz
+          mierzonej pętli</strong> i zafałszowało wynik eksperymentu.
+          Wiarygodność pomiaru jest tu ważniejsza niż uniknięcie czterech
+          powtórzonych linii.
+        </p>
+      </div>
+
+      <h3>C++</h3>
+      <p>
+        Odpowiednik modułu pythonowego. Te same wzory, to samo kryterium stopu,
+        ta sama stała ε.
+      </p>
+      <figure class="blok-kodu" data-plik="program/cpp/sqrt_metody.hpp">
+        <figcaption>program/cpp/sqrt_metody.hpp</figcaption>
+        <pre><code data-jezyk="cpp">Wczytywanie…</code></pre>
+      </figure>
+
+      <h3>Arkusz kalkulacyjny</h3>
+      <p>
+        W arkuszu każda iteracja jest osobnym wierszem, więc zbieżność widać
+        gołym okiem. Kolumna B przechowuje kolejne przybliżenia, a formuła
+        w każdym wierszu odwołuje się do wiersza poprzedniego.
+      </p>
+
+      <div class="przewijana">
+        <table class="arkusz">
+          <thead>
+            <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="naglowek-wiersza">4</td>
+              <td class="formula">n (liczba podpierwiastkowa)</td>
+              <td class="wejscie-arkusza">2</td>
+              <td></td><td></td>
+            </tr>
+            <tr>
+              <td class="naglowek-wiersza">5</td>
+              <td class="formula">x0 (punkt startowy)</td>
+              <td class="wejscie-arkusza">1</td>
+              <td></td><td></td>
+            </tr>
+            <tr>
+              <td class="naglowek-wiersza">6</td>
+              <td class="formula">wzorzec</td>
+              <td class="formula">=PIERWIASTEK($B$4)</td>
+              <td></td><td></td>
+            </tr>
+            <tr>
+              <td class="naglowek-wiersza">8</td>
+              <td class="formula">k</td>
+              <td class="formula">x(k)</td>
+              <td class="formula">n / x(k)</td>
+              <td class="formula">błąd</td>
+            </tr>
+            <tr>
+              <td class="naglowek-wiersza">9</td>
+              <td>0</td>
+              <td class="formula">=$B$5</td>
+              <td class="formula">=$B$4/B9</td>
+              <td class="formula">=MODUŁ.LICZBY(B9-$B$6)</td>
+            </tr>
+            <tr>
+              <td class="naglowek-wiersza">10</td>
+              <td>1</td>
+              <td class="formula">=0,5*(B9+$B$4/B9)</td>
+              <td class="formula">=$B$4/B10</td>
+              <td class="formula">=MODUŁ.LICZBY(B10-$B$6)</td>
+            </tr>
+            <tr>
+              <td class="naglowek-wiersza">11</td>
+              <td>2</td>
+              <td class="formula">=0,5*(B10+$B$4/B10)</td>
+              <td class="formula">=$B$4/B11</td>
+              <td class="formula">=MODUŁ.LICZBY(B11-$B$6)</td>
+            </tr>
+            <tr>
+              <td class="naglowek-wiersza">…</td>
+              <td class="formula" colspan="4">formuła z wiersza 10 skopiowana w dół do wiersza 19</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        <a class="pobierz" href="program/excel/metoda-babilonska.xlsx" download>
+          ↓ metoda-babilonska.xlsx
+        </a>
+      </p>
+
+      <div class="uwaga">
+        <p>
+          Arkusz powstaje z programu <code>program/excel/generuj_arkusz.py</code>.
+          Excel przechowuje formuły wewnętrznie po angielsku i dopiero wyświetla
+          je w języku interfejsu, więc w generatorze są nazwy <code>SQRT</code>
+          i <code>ABS</code>, a w polskim Excelu widać <code>PIERWIASTEK</code>
+          i <code>MODUŁ.LICZBY</code>.
+        </p>
+      </div>
+    </section>
+
+    <!-- ================= 5. EKSPERYMENT ================= -->
+    <section class="sekcja" id="eksperyment">
+      <h2>Eksperyment</h2>
+
+      <p>
+        Pytanie badawcze: <strong>ile kosztuje policzenie miliona pierwiastków
+        metodą babilońską zamiast funkcją biblioteczną</strong>, i czy płacimy
+        za to dokładnością.
+      </p>
+
+      <h3>Metodyka</h3>
+      <ul>
+        <li>Zakres liczb: <strong data-liczba="zakres">…</strong>, wszystkie liczby całkowite.</li>
+        <li>Liczba prób: <strong data-liczba="proby">…</strong>, osobno w Pythonie i w C++.</li>
+        <li>Dokładność: kryterium względne ε = 10⁻¹⁵, czyli 15 miejsc po przecinku.</li>
+        <li>Mierzone są trzy metody: <code>sqrt()</code>, Heron z naiwnym startem
+            i Heron ze startem z połowienia wykładnika.</li>
+        <li>Zegar: <code data-liczba="zegar-python">…</code> w Pythonie,
+            <code data-liczba="zegar-cpp">…</code> w C++.</li>
+      </ul>
+
+      <h3>Dwie pułapki, które trzeba było ominąć</h3>
+
+      <p>
+        <strong>Martwy kod.</strong> Gdyby program tylko liczył pierwiastki
+        i nigdzie nie używał wyników, kompilator C++ z flagą <code>-O2</code>
+        usunąłby całą mierzoną pętlę i pomiar pokazałby zero sekund. Dlatego
+        każda pętla sumuje wyniki, a program wypisuje sumę. Dodatkowo w C++
+        stoi bariera optymalizatora:
+      </p>
+
+      <figure class="blok-kodu" data-plik="program/cpp/benchmark.cpp" data-od="25" data-do="34">
+        <figcaption>program/cpp/benchmark.cpp · bariera optymalizatora</figcaption>
+        <pre><code data-jezyk="cpp">Wczytywanie…</code></pre>
+      </figure>
+
+      <p>
+        Suma pełni też drugą rolę: jest <strong>sumą kontrolną</strong>.
+        Wszystkie trzy metody, w obu językach, muszą dać identyczną wartość.
+        Inaczej liczą co innego i porównywanie ich czasów nie ma sensu.
+      </p>
+
+      <p>
+        <strong>Zimny procesor.</strong> Kolejność metod jest rotowana między
+        próbami. Przy stałej kolejności pierwsza mierzona metoda zawsze
+        trafiałaby na procesor przed podniesieniem taktowania i byłaby
+        systematycznie karana.
+      </p>
+
+      <h3>Program mierzący</h3>
+      <figure class="blok-kodu" data-plik="program/python/benchmark.py" data-od="40" data-do="76">
+        <figcaption>program/python/benchmark.py · mierzone pętle</figcaption>
+        <pre><code data-jezyk="python">Wczytywanie…</code></pre>
+      </figure>
+
+      <h3>Środowisko</h3>
+      <div class="karty">
+        <div class="karta"><dt>procesor</dt><dd><small data-liczba="procesor">…</small></dd></div>
+        <div class="karta"><dt>system</dt><dd><small data-liczba="system">…</small></dd></div>
+        <div class="karta"><dt>Python</dt><dd><small data-liczba="wersja-python">…</small></dd></div>
+        <div class="karta"><dt>kompilator</dt><dd><small data-liczba="kompilator">…</small></dd></div>
+        <div class="karta"><dt>flagi</dt><dd><small data-liczba="flagi">…</small></dd></div>
+        <div class="karta"><dt>pomiar z dnia</dt><dd><small data-liczba="wygenerowano">…</small></dd></div>
+      </div>
+    </section>
+
+    <!-- ================= 6. WYNIKI ================= -->
+    <section class="sekcja" id="wyniki">
+      <h2>Wyniki</h2>
+
+      <p id="stan-danych">
+        Wszystkie liczby w tej sekcji pochodzą z pliku <code>wyniki.json</code>,
+        wygenerowanego z rzeczywistych uruchomień programów. Suma kontrolna
+        zakresu wynosi <strong data-liczba="suma-kontrolna">…</strong>
+        i jest identyczna w Pythonie i w C++.
+      </p>
+
+      <h3>Czas policzenia miliona pierwiastków</h3>
+      <div class="przewijana" id="tabela-python"></div>
+      <div class="przewijana" id="tabela-cpp"></div>
+
+      <div class="wykres">
+        <h3>Średnie czasy obok siebie</h3>
+        <p class="podpis">
+          Python: <span data-liczba="py-sqrt">…</span> ·
+          <span data-liczba="py-naiwny">…</span> ·
+          <span data-liczba="py-szybki">…</span>.
+          C++: <span data-liczba="cpp-sqrt">…</span> ·
+          <span data-liczba="cpp-naiwny">…</span> ·
+          <span data-liczba="cpp-szybki">…</span>.
+        </p>
+        <div id="wykres-czasow"></div>
+      </div>
+
+      <h3>Dokładność</h3>
+      <p>
+        Dla każdej z <strong data-liczba="policzone">…</strong> liczb wynik obu
+        wariantów Herona porównano z <code>math.sqrt</code>. Błąd mierzony jest
+        w ULP (<em>unit in the last place</em>), czyli w liczbie pozycji
+        w zapisie zmiennoprzecinkowym, czyli w mierze niezależnej od rzędu wielkości.
+      </p>
+
+      <div class="karty">
+        <div class="karta">
+          <dt>błąd maksymalny</dt>
+          <dd><span data-liczba="max-ulp">…</span> ULP</dd>
+        </div>
+        <div class="karta">
+          <dt>błąd średni</dt>
+          <dd><span data-liczba="sredni-ulp">…</span> ULP</dd>
+        </div>
+        <div class="karta">
+          <dt>sprawdzonych liczb</dt>
+          <dd><span data-liczba="policzone">…</span></dd>
+        </div>
+      </div>
+
+      <p>
+        Jeden ULP to najmniejsza różnica, jaką typ <code>double</code> w ogóle
+        potrafi zapisać. Wynik Herona jest więc albo identyczny z wynikiem
+        funkcji bibliotecznej, albo różni się o jedną najmniejszą możliwą
+        jednostkę.
+      </p>
+
+      <div class="wykres">
+        <h3>Zbieżność dla n = 2</h3>
+        <p class="podpis">
+          Liczba poprawnych cyfr znaczących w kolejnych iteracjach. Każdy krok
+          mniej więcej podwaja poprzednią wartość, aż do granicy precyzji typu
+          <code>double</code> (około 15,95 cyfry).
+        </p>
+        <div id="wykres-zbieznosci"></div>
+      </div>
+    </section>
+
+    <!-- ================= 7. WNIOSKI ================= -->
+    <section class="sekcja" id="wnioski">
+      <h2>Wnioski</h2>
+
+      <h3>1. Metoda babilońska nie jest mniej dokładna</h3>
+      <p>
+        To był najbardziej zaskakujący wynik. Na całym zakresie
+        <span data-liczba="zakres">…</span> błąd obu wariantów Herona względem
+        funkcji bibliotecznej nie przekracza
+        <strong><span data-liczba="max-ulp">…</span> ULP</strong>, a średnio
+        wynosi <span data-liczba="sredni-ulp">…</span> ULP. Suma wyników całego
+        zakresu jest w Pythonie i w C++ identyczna co do ostatniej cyfry.
+      </p>
+      <p>
+        Metoda sprzed czterech tysięcy lat wyciska z typu
+        <code>double</code> wszystko, co się da. Nie ma tu żadnego kompromisu
+        między wiekiem algorytmu a jakością wyniku.
+      </p>
+
+      <h3>2. Cała różnica jest w koszcie</h3>
+      <p>
+        W Pythonie naiwny Heron jest około
+        <strong><span data-liczba="py-ile-razy">…</span> razy</strong> wolniejszy
+        od <code>math.sqrt</code>, w C++ około
+        <strong><span data-liczba="cpp-ile-razy">…</span> razy</strong>.
+        Powód jest prosty: <code>sqrt()</code> schodzi do pojedynczej instrukcji
+        procesora, a Heron potrzebuje kilkunastu obrotów pętli, z dzieleniem
+        w każdym.
+      </p>
+      <p>
+        Przewaga funkcji bibliotecznej jest wyraźniejsza w C++ niż w Pythonie,
+        i to też ma wytłumaczenie. W Pythonie każdy obrót pętli kosztuje tyle
+        pracy interpretera, że samo dzielenie ginie w tle. Narzut języka
+        spłaszcza różnicę między metodami. Ta sama pętla Herona w C++ chodzi
+        około <strong><span data-liczba="py-vs-cpp">…</span> razy</strong>
+        szybciej niż w Pythonie.
+      </p>
+
+      <h3>3. Punkt startowy jest wart tyle, co algorytm</h3>
+      <p>
+        Zamiana startu z <em>x₀</em> = <em>n</em> na przybliżenie z połowienia
+        wykładnika skraca liczbę iteracji dla <em>n</em> = 10⁶ z piętnastu do
+        trzech i przyspiesza obliczenia
+        <strong><span data-liczba="zysk-startu-py">…</span> raza</strong>
+        w Pythonie oraz
+        <strong><span data-liczba="zysk-startu-cpp">…</span> raza</strong>
+        w C++, przy identycznym wyniku co do bitu.
+      </p>
+      <p>
+        To jest szerszy morał całego projektu. Nie zmieniliśmy algorytmu, tylko
+        pierwszą liczbę, od której zaczyna. Dobrze dobrany punkt startowy
+        potrafi dać ten sam zysk, co przepisanie programu na inny język.
+      </p>
+
+      <h3>4. Kiedy Heron jest praktyczny</h3>
+      <p>
+        Nigdy, jeśli w systemie jest sprzętowy pierwiastek. Ale sprzętowy
+        pierwiastek sam w sobie jest metodą Herona: układ startuje od
+        przybliżenia z tablicy i poprawia je kilkoma krokami tego samego wzoru.
+        Metoda nie przegrała z <code>sqrt()</code>. Ona się w niej schowała.
+      </p>
+    </section>
+
+    </div>
+  </div>
+
+  <footer class="site">
+    <span>squareRoot/ · pracownia</span>
+    <a href="https://github.com/Alexander-288/informatica/tree/main/squareRoot">kod źródłowy</a>
+  </footer>
+</main>
+
+<script type="module">
+  import { wlaczUjawnianie, sledzSekcje, gdyWidoczny } from './assets/scrolly.js';
+  import { podswietlBloki, wczytajKod, dodajKopiowanie } from './assets/kod.js';
+  import { zbudujWizualizator } from './assets/heron.js';
+  import {
+    wczytajWyniki, tabelaCzasow, slupkiCzasow,
+    wykresIteracji, wykresZbieznosci, wstawLiczby,
+  } from './assets/wykresy.js';
+
+  wlaczUjawnianie();
+  sledzSekcje('.sekcja', '.szyna a');
+
+  podswietlBloki();
+  wczytajKod().then(() => dodajKopiowanie());
+  dodajKopiowanie();
+
+  // Wizualizator budujemy dopiero, gdy czytelnik do niego dojdzie.
+  gdyWidoczny(document.getElementById('wizualizator'), () => {
+    zbudujWizualizator(document.getElementById('wizualizator'));
+  });
+
+  wczytajWyniki().then((dane) => {
+    wstawLiczby(dane);
+    tabelaCzasow(document.getElementById('tabela-python'), dane, 'python');
+    tabelaCzasow(document.getElementById('tabela-cpp'), dane, 'cpp');
+    slupkiCzasow(document.getElementById('wykres-czasow'), dane);
+    wykresIteracji(document.getElementById('wykres-iteracji'), dane);
+    wykresZbieznosci(document.getElementById('wykres-zbieznosci'), dane);
+  }).catch((blad) => {
+    document.getElementById('stan-danych').textContent =
+      `Nie udało się wczytać wyniki.json (${blad.message}). `
+      + 'Uruchom program/python/eksport.py, żeby go wygenerować.';
+  });
+</script>
+</body>
+</html>
