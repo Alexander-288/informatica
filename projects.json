@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-13T08:00:50.366Z",
+  "generated": "2026-09-13T08:14:34.044Z",
   "count": 1,
   "projects": [
     {
@@ -14,7 +14,6 @@
       "status": "done",
       "accent": "#9C90FC",
       "graphic": "squareRoot/card.svg",
-      "pattern": "root",
       "demo": "squareRoot/",
       "source": "squareRoot/",
       "updated": "2026-09-13"

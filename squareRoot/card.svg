@@ -28,27 +28,11 @@
   <rect x="80" y="80" width="100" height="100" fill="url(#sr-dither)" opacity="0.5"/>
   <rect x="80" y="80" width="100" height="100" stroke="currentColor" stroke-width="5"/>
 
-  <!-- the radical: one connected staircase, 12px blocks on a 12px pitch -->
-  <g class="accent" fill="currentColor">
-    <rect x="6" y="54" width="12" height="12"/>
-    <rect x="18" y="54" width="12" height="12"/>
-    <rect x="18" y="66" width="12" height="12"/>
-    <rect x="30" y="66" width="12" height="12"/>
-    <rect x="30" y="78" width="12" height="12"/>
-    <rect x="42" y="78" width="12" height="12"/>
-    <rect x="42" y="90" width="12" height="12"/>
-    <rect x="54" y="78" width="12" height="12"/>
-    <rect x="54" y="66" width="12" height="12"/>
-    <rect x="54" y="54" width="12" height="12"/>
-    <rect x="66" y="54" width="12" height="12"/>
-    <rect x="66" y="42" width="12" height="12"/>
-    <rect x="66" y="30" width="12" height="12"/>
-    <rect x="66" y="18" width="12" height="12"/>
-    <rect x="78" y="18" width="12" height="12"/>
-    <rect x="90" y="18" width="12" height="12"/>
-    <rect x="102" y="18" width="12" height="12"/>
-    <rect x="114" y="18" width="12" height="12"/>
-  </g>
+  <!-- The radical, as one outlined shape rather than a row of blocks.
+       Abutting rects seam along their shared edges once the SVG is scaled,
+       which showed up as gaps in the staircase; a single path has no
+       internal edges to seam. Still on the same 12px pitch. -->
+  <path class="accent" fill="currentColor" d="M6 54 L30 54 L30 66 L42 66 L42 78 L54 78 L54 54 L66 54 L66 18 L126 18 L126 30 L78 30 L78 66 L66 66 L66 90 L54 90 L54 102 L42 102 L42 90 L30 90 L30 78 L18 78 L18 66 L6 66 Z"/>
 
   <!-- the point everything converges on -->
   <rect class="accent" x="124" y="124" width="12" height="12" fill="currentColor"/>

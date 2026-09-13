@@ -44,7 +44,6 @@ for (const entry of entries) {
     status: meta.status ?? 'wip',
     accent: meta.accent ?? null,
     graphic: graphic ? `${entry.name}/${graphic}` : null,
-    pattern: meta.pattern ?? null,
     demo: meta.demo ?? (hasDemo ? `${entry.name}/` : null),
     source: meta.source ?? `${entry.name}/`,
     updated,

@@ -34,8 +34,7 @@ One repository for every informatics project, with a GitHub Pages gallery in fro
   "title": "Binary Search",
   "description": "One sentence about what it does.",
   "tags": ["javascript", "algorithms"],
-  "status": "wip",
-  "pattern": "steps"
+  "status": "wip"
 }
 ```
 
@@ -66,7 +65,7 @@ or just use a VScode extension like `live server`
 | `description` | no | shown on the card |
 | `tags` | no | become the filter buttons on the gallery |
 | `status` | no | `done`, `wip`, or `idea` (default `wip`); sets the node style on the timeline |
-| `pattern` | no | the background pattern behind the card's row: `converge`, `grid`, `dither`, `rings`, `bars`, `steps`, `braces`, `dots`. Picked from the tags, then from the folder name, if unset |
+| | | the faint dither blob behind a card's row is generated from the folder name - nothing to set |
 | `graphic` | no | path to the card artwork inside the folder; `card.svg` is picked up automatically |
 | `accent` | no | hex colour for the card's left edge |
 | `demo` | no | defaults to the folder if it has an `index.html` |
