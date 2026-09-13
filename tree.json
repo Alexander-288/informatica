@@ -1,6 +1,6 @@
 {
-  "generated": "2026-09-13T07:26:17.413Z",
-  "files": 18,
+  "generated": "2026-09-13T07:38:47.141Z",
+  "files": 19,
   "dirs": 5,
   "tree": {
     "name": ".",
@@ -95,6 +95,11 @@
       {
         "name": ".nojekyll",
         "path": ".nojekyll",
+        "type": "file"
+      },
+      {
+        "name": "404.html",
+        "path": "404.html",
         "type": "file"
       },
       {

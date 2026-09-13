@@ -1,3 +1,12 @@
 node_modules/
 .DS_Store
 Thumbs.db
+
+# local AI assistant files - kept on disk, never published
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+.claude/
+.impeccable/
+.cursor/
+.aider*
