@@ -55,7 +55,7 @@ To preview locally before pushing:
 node scripts/build-gallery.mjs
 python -m http.server 8000
 ```
-or just use a VScode extension like live server
+or just use a VScode extension like `live server`
 > whatever tickles your fancy
 
 ### project.json fields
