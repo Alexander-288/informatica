@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Layout Probe One card artwork">
+  <rect width="400" height="400" fill="currentColor" opacity="0.04"/>
+  <rect x="34" y="32" width="332" height="336" rx="28" fill="currentColor" opacity="0.12"/>
+  <path class="accent" d="M92 286 L196 118 L310 286 Z" fill="currentColor" opacity="0.92"/>
+  <rect x="108" y="206" width="160" height="58" rx="18" fill="#ffffff" opacity="0.12"/>
+  <rect x="204" y="126" width="92" height="24" rx="12" fill="currentColor" opacity="0.3"/>
+  <rect x="90" y="96" width="64" height="64" rx="18" fill="currentColor" opacity="0.16"/>
+  <circle cx="128" cy="128" r="16" class="accent" fill="currentColor" opacity="0.9"/>
+  <path d="M115 266 H275" stroke="currentColor" stroke-width="8" stroke-linecap="round" opacity="0.55"/>
+  <path d="M115 286 H245" stroke="currentColor" stroke-width="8" stroke-linecap="round" opacity="0.4"/>
+</svg>

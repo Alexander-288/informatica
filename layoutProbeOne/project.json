@@ -3,5 +3,6 @@
   "description": "Empty project shell used to test gallery layout and card density.",
   "tags": ["layout", "test", "ui"],
   "status": "wip",
+  "accent": "#8ec5ff",
   "updated": "2026-09-24"
 }

@@ -3,5 +3,6 @@
   "description": "Second empty project shell for testing different visual density and hierarchy.",
   "tags": ["layout", "test", "prototype"],
   "status": "idea",
+  "accent": "#ffbf69",
   "updated": "2026-09-24"
 }
