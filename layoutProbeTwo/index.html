@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Layout Probe Two</title>
+  <link rel="stylesheet" href="../assets/site.css" />
+  <script src="../assets/theme.js" defer></script>
+  <style>
+    :root {
+      --panel: rgba(15, 23, 42, 0.75);
+      --line: rgba(148, 163, 184, 0.22);
+      --text: #edf2ff;
+      --muted: #afbdd7;
+      --accent: #ffbf69;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(160deg, #0b1020, #111827 40%, #0f172a);
+      color: var(--text);
+      font-family: system-ui, sans-serif;
+    }
+    .shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.02);
+      border-radius: 14px;
+      margin-bottom: 28px;
+    }
+    .badge {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,191,105,0.12);
+      color: var(--accent);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .main {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: 0 12px 25px rgba(0,0,0,0.14);
+    }
+    .big { min-height: 420px; }
+    .kicker {
+      color: var(--accent);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    h1 {
+      font-size: clamp(2.3rem, 4vw, 3.8rem);
+      line-height: 1.05;
+      margin: 12px 0 14px;
+    }
+    p { color: var(--muted); line-height: 1.7; margin: 0; }
+    .side-stack { display: grid; gap: 16px; margin-top: 22px; }
+    .mini-box {
+      min-height: 110px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(255,191,105,0.12), rgba(255,255,255,0.03));
+      padding: 18px;
+    }
+    .mini-box strong { display: block; margin-bottom: 8px; font-size: 1.2rem; }
+    @media (max-width: 800px) { .main { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="topbar">
+      <div class="badge">Preview</div>
+      <div class="badge" style="background: rgba(255,255,255,0.04); color: var(--text);">Layout test</div>
+    </div>
+    <div class="main">
+      <section class="panel big">
+        <div class="kicker">Project shell</div>
+        <h1>Layout Probe Two</h1>
+        <p>A second empty shell for testing different density, hierarchy, and spacing patterns.</p>
+      </section>
+      <aside class="panel">
+        <div class="side-stack">
+          <div class="mini-box"><strong>Widget 1</strong><p>Placeholder card block</p></div>
+          <div class="mini-box"><strong>Widget 2</strong><p>Secondary panel for tests</p></div>
+          <div class="mini-box"><strong>Widget 3</strong><p>Additional module placeholder</p></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>

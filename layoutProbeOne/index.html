@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Layout Probe One</title>
+  <link rel="stylesheet" href="../assets/site.css" />
+  <script src="../assets/theme.js" defer></script>
+  <style>
+    :root {
+      --panel: rgba(255,255,255,0.08);
+      --line: rgba(255,255,255,0.12);
+      --text: #eaeaea;
+      --muted: #b9c0d1;
+      --accent: #8ec5ff;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(142,197,255,0.22), transparent 33%),
+        linear-gradient(135deg, #121826, #1d2435 40%, #0f172a);
+      color: var(--text);
+      font-family: system-ui, sans-serif;
+    }
+    .shell {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+      align-items: stretch;
+      margin-bottom: 32px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+      backdrop-filter: blur(8px);
+    }
+    .eyebrow {
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    h1 {
+      margin: 16px 0 10px;
+      font-size: clamp(2.3rem, 5vw, 4rem);
+      line-height: 1.05;
+    }
+    p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.02rem;
+      line-height: 1.7;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 28px;
+    }
+    .stat {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px 16px;
+    }
+    .stat strong {
+      display: block;
+      font-size: 1.5rem;
+      margin-bottom: 6px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+      margin-top: 28px;
+    }
+    .mini {
+      min-height: 180px;
+      display: flex;
+      align-items: end;
+      padding: 20px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)),
+        linear-gradient(135deg, rgba(142,197,255,0.18), rgba(255,255,255,0.02));
+    }
+    .mini span {
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    @media (max-width: 760px) {
+      .hero, .grid, .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="hero">
+      <section class="card">
+        <div class="eyebrow">Layout test</div>
+        <h1>Layout Probe One</h1>
+        <p>
+          Empty project shell built to test spacing, cards, rhythm, and visual density before
+          filling in actual content.
+        </p>
+        <div class="stats">
+          <div class="stat"><strong>12</strong><span>Modules</span></div>
+          <div class="stat"><strong>05</strong><span>Sections</span></div>
+          <div class="stat"><strong>24</strong><span>Layouts</span></div>
+        </div>
+      </section>
+      <aside class="card">
+        <div class="eyebrow">Status</div>
+        <h1 style="font-size: 1.8rem; margin-top: 8px;">Preview</h1>
+        <p>Neutral placeholder for testing the gallery and project page shell.</p>
+      </aside>
+    </div>
+    <div class="grid">
+      <div class="mini"><span>Block A</span></div>
+      <div class="mini"><span>Block B</span></div>
+      <div class="mini"><span>Block C</span></div>
+    </div>
+  </div>
+</body>
+</html>
