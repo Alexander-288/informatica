@@ -7,7 +7,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 
 const root = process.cwd();
-const IGNORE = new Set(['.git', '.github', 'node_modules', 'assets', 'scripts']);
+const IGNORE = new Set(['.git', '.github', 'node_modules', 'assets', 'scripts', 'layoutProbeOne', 'layoutProbeTwo']);
 
 const entries = await readdir(root, { withFileTypes: true });
 const projects = [];
